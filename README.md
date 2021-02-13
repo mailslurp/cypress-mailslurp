@@ -5,7 +5,7 @@ weight: -95
 iconType: asset
 icon: /assets/icons/cypress.svg
 featured: true
-feature: ["Recommended", -100]
+feature: docs_recommended
 ---
 # MailSlurp Cypress Plugin
 
