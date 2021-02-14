@@ -1,12 +1,3 @@
----
-label: Cypress Plugin
-subtitle: Official MailSlurp Cypress plugin for easy end-to-end email testing.
-weight: -95
-iconType: asset
-icon: /assets/icons/cypress.svg
-featured: true
-feature: docs_recommended
----
 # MailSlurp Cypress Plugin
 
 > WORK IN PROGRESS
