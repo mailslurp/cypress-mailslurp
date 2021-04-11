@@ -13,8 +13,9 @@
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
-    "test": "tsdx test",
-    "lint": "tsdx lint --fix src test"
+    "test": "tsdx test --testPathPattern=test/.+",
+    "lint": "tsdx lint --fix src test",
+    "cypress": "cypress run"
   },
   "peerDependencies": {},
   "prettier": {
@@ -30,10 +31,10 @@
     "tsdx": "^0.14.1",
     "tslib": "^2.2.0",
     "typescript": "^4.2.4",
-    "@types/isomorphic-fetch": "0.0.35"
+    "@types/isomorphic-fetch": "0.0.35",
+    "cypress": "^7.0.1"
   },
   "dependencies": {
-    "cypress": "^7.0.1",
     "isomorphic-fetch": "^3.0.0",
     "mailslurp-client": "^11.3.1"
   }
