@@ -1,3 +1,6 @@
 {
-  "baseUrl": "https://playground.mailslurp.com"
+  "baseUrl": "https://playground.mailslurp.com",
+  "defaultCommandTimeout": 30000,
+  "responseTimeout": 30000,
+  "requestTimeout": 30000
 }

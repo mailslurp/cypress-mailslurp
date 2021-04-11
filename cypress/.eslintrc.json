@@ -1,0 +1,10 @@
+{
+  "plugins": [
+    "cypress",
+    "chai-friendly"
+  ],
+  "extends": [
+    "plugin:chai-friendly/recommended",
+    "plugin:cypress/recommended"
+  ]
+}
