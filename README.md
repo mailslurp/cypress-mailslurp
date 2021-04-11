@@ -5,6 +5,14 @@ Official MailSlurp email plugin for Cypress JS. Create real test email accounts.
 
 `npm install --save-dev cypress-mailslurp`
 
+Then include the plugin in your `cypress/support/index.{js,ts}` file.
+
+```typescript
+import "cypress-mailslurp";
+```
+
+See the [example project](https://github.com/mailslurp/examples/tree/master/javascript-cypress-mailslurp-plugin) for setup help.
+
 ## Setup
 MailSlurp is free but requires an API Key. Get yours by [creating a free account](https://www.mailslurp.com/sign-up/).
 
