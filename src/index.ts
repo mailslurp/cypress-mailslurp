@@ -1,12 +1,4 @@
-declare global {
-  namespace Cypress {
-    interface Chainable extends CypressMailSlurp.Chainable {}
-  }
-}
+/// <reference types="cypress" />
+import { register } from './register';
 
-export const sum = (a: number, b: number) => {
-  if ('development' === process.env.NODE_ENV) {
-    console.log('boop');
-  }
-  return a + b;
-};
+register(Cypress);

@@ -14,17 +14,9 @@
     "start": "tsdx watch",
     "build": "tsdx build",
     "test": "tsdx test",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
-    "size": "size-limit",
-    "analyze": "size-limit --why"
+    "lint": "tsdx lint --fix src test"
   },
   "peerDependencies": {},
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
-  },
   "prettier": {
     "printWidth": 80,
     "semi": true,
@@ -32,27 +24,17 @@
     "trailingComma": "es5"
   },
   "name": "cypress-mailslurp",
-  "author": "juxedo",
+  "author": "mailslurp",
   "module": "dist/cypress-mailslurp.esm.js",
-  "size-limit": [
-    {
-      "path": "dist/cypress-mailslurp.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/cypress-mailslurp.esm.js",
-      "limit": "10 KB"
-    }
-  ],
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^4.9.2",
-    "husky": "^5.0.9",
-    "size-limit": "^4.9.2",
     "tsdx": "^0.14.1",
-    "tslib": "^2.1.0",
-    "typescript": "^4.1.5"
+    "tslib": "^2.2.0",
+    "typescript": "^4.2.4",
+    "@types/isomorphic-fetch": "0.0.35"
   },
   "dependencies": {
-    "mailslurp-client": "^11.3.0"
+    "cypress": "^7.0.1",
+    "isomorphic-fetch": "^3.0.0",
+    "mailslurp-client": "^11.3.1"
   }
 }
