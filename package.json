@@ -18,7 +18,8 @@
     "build": "tsdx build",
     "test": "tsdx test --testPathPattern=test/.+",
     "lint": "tsdx lint --fix src test cypress",
-    "cypress": "cypress run"
+    "cypress": "cypress run",
+    "cypress-open": "cypress open"
   },
   "peerDependencies": {},
   "prettier": {

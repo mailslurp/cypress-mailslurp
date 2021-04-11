@@ -12,3 +12,6 @@ build:
 
 cypress:
 	CYPRESS_MAILSLURP_API_KEY=$(API_KEY) npm run cypress
+
+cypress-open:
+	CYPRESS_MAILSLURP_API_KEY=$(API_KEY) npm run cypress-open
