@@ -145,8 +145,7 @@ It then loads the demo application, fills out a sign up form using the email add
 We wait for the email to arrive using the `waitForLatestEmail` method and then extract a confirmation code that can be submitted to the app to confirm the user.
 
 ```typescript
-/// <reference types="cypress" />
-/// <reference types="../../src" />
+/// <reference types="cypress-mailslurp" />
 describe("user sign up test with mailslurp plugin", function () {
     // use cypress-mailslurp plugin to create an email address before test
     before(function () {
