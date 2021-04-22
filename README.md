@@ -88,7 +88,7 @@ cy.mailslurp()
 ```
 
 #### Receive emails in tests
-Use the `waitFor` methods to wait for emails for an inbox. See the [email object docs](https://www.mailslurp.com/docs/js/docs/interfaces/email/z) for full properties.
+Use the `waitFor` methods to wait for emails for an inbox. See the [email object docs](https://www.mailslurp.com/docs/js/docs/interfaces/email/) for full properties.
 ```typescript
 cy.mailslurp()
     .then(mailslurp => mailslurp.waitForLatestEmail(inboxId, 30000, true))
