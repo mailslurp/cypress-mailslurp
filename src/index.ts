@@ -1,6 +1,5 @@
 /// <reference types="./">
 import {MailSlurp} from "mailslurp-client";
-import fetchApi from "isomorphic-fetch";
 function register(Cypress: Cypress.Cypress) {
     // check API Key
     const apiKey = Cypress.env('MAILSLURP_API_KEY');
@@ -13,7 +12,7 @@ function register(Cypress: Cypress.Cypress) {
     }
 
     // create instance
-    const mailslurp = new MailSlurp({ apiKey, fetchApi });
+    const mailslurp = new MailSlurp({ apiKey });
     Cypress.Commands.add('mailslurp', () => {
         return Promise.resolve(mailslurp);
     });

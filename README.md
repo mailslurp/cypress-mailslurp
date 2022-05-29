@@ -76,7 +76,7 @@ cy.mailslurp().then(mailslurp => mailslurp.createInbox() /* etc */)
 ### Common methods
 The client chained by the `cy.mailslurp()` has all the same methods and properties as the official MailSlurp client. See the [Javascript documentation](https://www.mailslurp.com/docs/js/) for a full [API reference](https://www.mailslurp.com/docs/js/docs/) or see the examples below.
 
-The MailSlurp client has a number of convenience methods and also exposes the full MailSlurp API as controllers. See the [class reference for full method documentation](https://www.mailslurp.com/docs/js/docs/classes/mailslurp/).
+The MailSlurp client has a number of convenience methods and also exposes the full MailSlurp API as controllers. See the [class reference for full method documentation](https://www.mailslurp.com/docs/js/docs/classes/MailSlurp/).
 
 #### Create email address
 You can create test email accounts with MailSlurp by creating inboxes. Inboxes have an `id` and an `emailAddress`. Save the `id` for later use when fetching or sending emails.
@@ -91,7 +91,7 @@ cy.mailslurp()
 Use the `waitFor` methods to wait for emails for an inbox. See the [email object docs](https://www.mailslurp.com/docs/js/docs/interfaces/email/) for full properties.
 ```typescript
 cy.mailslurp()
-    .then(mailslurp => mailslurp.waitForLatestEmail(inboxId, 30000, true))
+    .then(mailslurp => mailslurp.waitForLatestEmail(undefined,undefined,inboxId,undefined,undefined, 30000, true))
     .then(email => expect(email.subject).to.contain("My email"))
 ```
 
@@ -178,7 +178,7 @@ describe("user sign up test with mailslurp plugin", function () {
         // app will send user an email containing a code, use mailslurp to wait for the latest email
         cy.mailslurp()
             // use inbox id and a timeout of 30 seconds
-            .then(mailslurp => mailslurp.waitForLatestEmail(this.inboxId, 30000, true))
+            .then(mailslurp => mailslurp.waitForLatestEmail(undefined,undefined,this.inboxId,undefined,undefined,30000, true))
             // extract the confirmation code from the email body
             .then(email => /.*verification code is (\d{6}).*/.exec(email.body!!)!![1])
             // fill out the confirmation form and submit
