@@ -11,7 +11,7 @@ Then include the plugin in your `cypress/support/index.{js,ts}` file.
 import "cypress-mailslurp";
 ```
 
-See the [example project](https://github.com/mailslurp/examples/tree/master/javascript-cypress-mailslurp-plugin) for setup help.
+See the [example project](https://github.com/mailslurp/examples/tree/master/javascript-cypress-mailslurp-plugin) for setup help. Or run the example integration tests with `CYPRESS_MAILSLURP_API_KEY=your-api-key npm run cypress`.
 
 ## Setup
 MailSlurp is free but requires an API Key. Get yours by [creating a free account](https://www.mailslurp.com/sign-up/).
@@ -203,3 +203,5 @@ describe("user sign up test with mailslurp plugin", function () {
 });
 ```
 
+### More examples
+See the [Cypress example test suite](https://github.com/mailslurp/cypress-mailslurp/tree/master/cypress) for real tests that use this plugin.

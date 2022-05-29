@@ -12,7 +12,7 @@ function register(Cypress: Cypress.Cypress) {
     }
 
     // create instance
-    const mailslurp = new MailSlurp({ apiKey });
+    const mailslurp = new MailSlurp({ apiKey, basePath: 'https://cypress.api.mailslurp.com' });
     Cypress.Commands.add('mailslurp', () => {
         return Promise.resolve(mailslurp);
     });
