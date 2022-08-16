@@ -20,12 +20,22 @@ MailSlurp is free but requires an API Key. Get yours by [creating a free account
 Set the environment variable `CYPRESS_MAILSLURP_API_KEY` or use the `cypress.json` file `env` property:
 
 #### Environment variable
+For Mac/Linux set the `CYPRESS_MAILSLURP_API_KEY` environment variable:
 
 ```bash
 CYPRESS_MAILSLURP_API_KEY=your-api-key cypress run
 ```
 
+For Windows machines use the Powershell format `$env:CYPRESS_MAILSLURP_API_KEY`
+
+```
+$env:CYPRESS_MAILSLURP_API_KEY=your-api-key;
+cypress run;
+```
+
 #### Cypress env property
+You can also configure Cypress using the config format.
+
 ```json
 {
   "env": {
