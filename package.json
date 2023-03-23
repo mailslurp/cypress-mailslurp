@@ -19,7 +19,8 @@
     "test": "tsdx test --testPathPattern=test/.+",
     "lint": "tsdx lint --fix src test cypress",
     "cypress": "cypress run",
-    "cypress-open": "cypress open"
+    "cypress-open": "cypress open",
+    "readme": "node scripts/readme.js"
   },
   "prettier": {
     "printWidth": 80,
@@ -37,6 +38,6 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
-    "mailslurp-client": "^15.16.1"
+    "mailslurp-client": "^15.17.0"
   }
 }

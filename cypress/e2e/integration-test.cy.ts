@@ -1,5 +1,16 @@
 /// <reference types="cypress" />
 /// <reference types="../../src" />
+//<gen>cy_plugin_test_usage
+describe('basic usage', function () {
+  it('can load the plugin', async function () {
+    // test we can connect to mailslurp
+    const mailslurp = await cy.mailslurp();
+    const userInfo = await mailslurp.userController.getUserInfo();
+    expect(userInfo.id).to.exist
+  })
+});
+//</gen>
+//<gen>cy_example_test
 describe('user sign up test with mailslurp plugin', function() {
   // use cypress-mailslurp plugin to create an email address before test
   before(function() {
@@ -68,3 +79,4 @@ describe('user sign up test with mailslurp plugin', function() {
     cy.get('h1').should('contain', 'Welcome');
   });
 });
+//</gen>
