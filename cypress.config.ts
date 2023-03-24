@@ -1,3 +1,4 @@
+//<gen>cy_config
 import { defineConfig } from 'cypress'
 
 export default defineConfig({
@@ -13,3 +14,4 @@ export default defineConfig({
     baseUrl: 'https://playground.mailslurp.com',
   },
 })
+//</gen>

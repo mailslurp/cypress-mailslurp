@@ -6,11 +6,23 @@ Official MailSlurp email plugin for Cypress JS. Create real test email accounts.
 - [Use without plugin](https://github.com/mailslurp/examples/tree/master/javascript-cypress-js)
 - [SMS testing](https://github.com/mailslurp/examples/tree/master/javascript-cypress-sms-testing)
 
-
-## Install
+## Install MailSlurp
 
 There are **two ways** to use MailSlurp with Cypress: either with the `cypress-mailslurp` plugin or by adding a command to register the `mailslurp-client` within your `cypress/support/commands.js` file.
 
+First install an initialize Cypress:
+
+```
+npm install --save-dev cypress
+```
+
+Set command timeouts in your `cypress.config.js`
+
+```typescript
+{{cy_config}}
+```
+
+Then install MailSlurp plugin using one of the below ways:
 
 ### 1) Cypress MailSlurp Plugin
 
@@ -141,6 +153,7 @@ cy.mailslurp()
 
 #### Receive emails in tests
 Use the `waitFor` methods to wait for emails for an inbox. See the [email object docs](https://www.mailslurp.com/docs/js/docs/interfaces/email/) for full properties.
+
 ```typescript
 cy.mailslurp()
     .then(mailslurp => mailslurp.waitForLatestEmail(undefined,undefined,inboxId,undefined,undefined, 30000, true))
@@ -170,25 +183,10 @@ cy.mailslurp().then(mailslurp => mailslurp.attachmentController.uploadAttachment
 Cypress has a unique async nature. To use MailSlurp effectively with Cypress chain your commands using [`then()`](https://docs.cypress.io/api/commands/then) or store results in wrapped aliases using [`wrap()`](https://docs.cypress.io/api/commands/wrap) and [`as()`](https://docs.cypress.io/api/commands/as).
 
 ```typescript
-before(function () {
-    return cy.mailslurp()
-        .then(mailslurp => mailslurp.createInbox())
-        .then(inbox => {
-            // save inbox id and email address to this (make sure you use function and not arrow syntax)
-            cy.wrap(inbox.id).as('inboxId')
-            cy.wrap(inbox.emailAddress).as('emailAddress')
-        })
-});
-it("01 - can load the demo application", function () {
-    // get wrapped email address and assert contains a mailslurp email address
-    expect(this.emailAddress).to.contain("@mailslurp");
-    // visit the demo application
-    cy.visit("https://playground.mailslurp.com")
-    cy.title().should('contain', 'React App');
-});
+{{cy_store_values}}
 ```
 
-> **Note:** using `wrap` to store values accross test methods requires you to use `function` syntax instead of `() =>` arrow syntax. This ensure that `this` is dynamically scoped and includes the aliased variables.
+> **Note:** using `wrap` to store values across test methods requires you to use `function` syntax instead of `() =>` arrow syntax. This ensure that `this` is dynamically scoped and includes the aliased variables.
 
 ## Example test
 Here is an example of testing user sign up on a demo application hosted at [playground.mailslurp.com](https://playground.mailslurp.com). 

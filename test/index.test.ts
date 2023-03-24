@@ -56,7 +56,7 @@ describe('plugin', () => {
     }
     expect(add).not.toHaveBeenCalled();
     expect(e.message).toContain(
-      'Error no MailSlurp API Key. Please set the CYPRESS_MAILSLURP_API_KEY'
+      'Error no MailSlurp API Key.'
     );
   });
 });

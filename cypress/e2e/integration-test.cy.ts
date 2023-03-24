@@ -13,6 +13,7 @@ describe('basic usage', function () {
 //<gen>cy_example_test
 describe('user sign up test with mailslurp plugin', function() {
   // use cypress-mailslurp plugin to create an email address before test
+  //<gen>cy_store_values
   before(function() {
     return cy
       .mailslurp()
@@ -30,6 +31,7 @@ describe('user sign up test with mailslurp plugin', function() {
     cy.visit('/');
     cy.title().should('contain', 'React App');
   });
+  //</gen>
   // use function instead of arrow syntax to access aliased values on this
   it('02 - can sign up using email address', function() {
     // click sign up and fill out the form
