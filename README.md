@@ -185,7 +185,7 @@ describe('store values', function () {
           cy.wrap(inbox.emailAddress).as('emailAddress');
         });
   });
-  it('01 - can load the demo application', function() {
+  it('can access values on this', function() {
     // get wrapped email address and assert contains a mailslurp email address
     expect(this.emailAddress).to.contain('@mailslurp');
   });
@@ -248,7 +248,7 @@ before(function() {
         cy.wrap(inbox.emailAddress).as('emailAddress');
       });
 });
-it('01 - can load the demo application', function() {
+it('can access values on this', function() {
   // get wrapped email address and assert contains a mailslurp email address
   expect(this.emailAddress).to.contain('@mailslurp');
 });
