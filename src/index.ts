@@ -4,10 +4,7 @@ import {MailSlurp} from "mailslurp-client";
 //</gen>
 function register(Cypress: Cypress.Cypress) {
     //<gen>cy_add_plugin
-    // read the API Key from environment variable
-    // NOTE you need to set using this using the `CYPRESS_` prefix so `CYPRESS_MAILSLURP_API_KEY`
-    // - windows: $Env:CYPRESS_MAILSLURP_API_KEY=your_mailslurp_api_key
-    // - mac/linux: CYPRESS_MAILSLURP_API_KEY=your_mailslurp_api_key
+    // read the API Key from environment variable (see the API Key section of README)
     const apiKey = Cypress.env('MAILSLURP_API_KEY');
     if (!apiKey) {
         throw new Error(
@@ -16,7 +13,7 @@ function register(Cypress: Cypress.Cypress) {
             'Create a free account at https://app.mailslurp.com/sign-up/. See https://docs.cypress.io/guides/guides/environment-variables#Option-3-CYPRESS_ for more information.'
         );
     }
-    // create an instance of mailslurp
+    // create an instance of mailslurp-client
     const mailslurp = new MailSlurp({ apiKey, basePath: 'https://cypress.api.mailslurp.com' });
     // register MailSlurp with cypress under "mailslurp" command
     // afterwards you can access it in tests using `cy.mailslurp().then(mailslurp => /* do stuff */)`

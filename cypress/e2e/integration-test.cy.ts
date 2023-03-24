@@ -9,11 +9,28 @@ describe('basic usage', function () {
     expect(userInfo.id).to.exist
   })
 });
+describe('store values', function () {
+  //<gen>cy_store_values
+  before(function() {
+    return cy
+        .mailslurp()
+        .then(mailslurp => mailslurp.createInbox())
+        .then(inbox => {
+          // save inbox id and email address to this (make sure you use function and not arrow syntax)
+          cy.wrap(inbox.id).as('inboxId');
+          cy.wrap(inbox.emailAddress).as('emailAddress');
+        });
+  });
+  it('can access values on this', function() {
+    // get wrapped email address and assert contains a mailslurp email address
+    expect(this.emailAddress).to.contain('@mailslurp');
+  });
+  //</gen>
+})
 //</gen>
 //<gen>cy_example_test
 describe('user sign up test with mailslurp plugin', function() {
   // use cypress-mailslurp plugin to create an email address before test
-  //<gen>cy_store_values
   before(function() {
     return cy
       .mailslurp()
@@ -31,7 +48,6 @@ describe('user sign up test with mailslurp plugin', function() {
     cy.visit('/');
     cy.title().should('contain', 'React App');
   });
-  //</gen>
   // use function instead of arrow syntax to access aliased values on this
   it('02 - can sign up using email address', function() {
     // click sign up and fill out the form

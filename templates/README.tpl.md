@@ -6,11 +6,10 @@ Official MailSlurp email plugin for Cypress JS. Create real test email accounts.
 - [Use without plugin](https://github.com/mailslurp/examples/tree/master/javascript-cypress-js)
 - [SMS testing](https://github.com/mailslurp/examples/tree/master/javascript-cypress-sms-testing)
 
-## Install MailSlurp
 
-There are **two ways** to use MailSlurp with Cypress: either with the `cypress-mailslurp` plugin or by adding a command to register the `mailslurp-client` within your `cypress/support/commands.js` file.
+## Install Cypress
 
-First install an initialize Cypress:
+First install and initialize Cypress:
 
 ```
 npm install --save-dev cypress
@@ -22,7 +21,10 @@ Set command timeouts in your `cypress.config.js`
 {{cy_config}}
 ```
 
-Then install MailSlurp plugin using one of the below ways:
+## Install MailSlurp
+Next we add MailSlurp to our Cypress tests. There are **two ways** to use MailSlurp with Cypress: 
+- either with the `cypress-mailslurp` plugin 
+- or by adding a command to register the `mailslurp-client` within your `cypress/support/commands.js` file.
 
 ### 1) Cypress MailSlurp Plugin
 
@@ -33,8 +35,7 @@ npm install --save-dev cypress-mailslurp
 Then include the plugin in your `cypress/support/index.{js,ts}` file.
 
 ```typescript
-// inside `cypress/support/e2e.js`
-import "cypress-mailslurp";
+{{cy_import_mailslurp}}
 ```
 
 > **NOTE** you must import the MailSlurp plugin in `cypress/support/e2e.ts`
@@ -43,21 +44,18 @@ import "cypress-mailslurp";
 ### 2) Standalone MailSlurp client
 Install the [MailSlurp Javascript library](https://n) and then add MailSlurp as a [custom cypress command](https://docs.cypress.io/api/cypress-api/custom-commands).
 
-Install package from npm
+Install package from npm:
+
 ```sh
 npm install --save-dev mailslurp-client
 ```
 
 Edit one of the [custom commands files](https://docs.cypress.io/api/cypress-api/custom-commands) `cypress/support/commands.{ts,js}` or `cypress/support/e2e.{ts,js}` and register the MailSlurp command:
 
-```typescript
-{{cy_import_mailslurp}}
-```
 
 ```typescript
 {{cy_add_plugin}}
 ```
-
 
 ## Setup
 MailSlurp is free but requires an API Key. Get yours by [creating a free account](https://www.mailslurp.com/sign-up/).

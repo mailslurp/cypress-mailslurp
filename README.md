@@ -7,10 +7,42 @@ Official MailSlurp email plugin for Cypress JS. Create real test email accounts.
 - [SMS testing](https://github.com/mailslurp/examples/tree/master/javascript-cypress-sms-testing)
 
 
-## Install
+## Install Cypress
 
-There are **two ways** to use MailSlurp with Cypress: either with the `cypress-mailslurp` plugin or by adding a command to register the `mailslurp-client` within your `cypress/support/commands.js` file.
+First install and initialize Cypress:
 
+```
+npm install --save-dev cypress
+```
+
+Set command timeouts in your `cypress.config.js`
+
+```typescript
+import { defineConfig } from 'cypress'
+
+export default defineConfig({
+  // set timeouts so MailSlurp can wait for emails and sms
+  defaultCommandTimeout: 30000,
+  responseTimeout: 30000,
+  requestTimeout: 30000,
+  e2e: {
+    // We've imported your old cypress plugins here.
+    // You may want to clean this up later by importing these.
+    setupNodeEvents(on, config) {
+      return require('./cypress/plugins/index.js')(on, config)
+    },
+    // examples run against the playground app
+    baseUrl: 'https://playground.mailslurp.com',
+    // these examples require no test isolation
+    testIsolation: false
+  },
+})
+```
+
+## Install MailSlurp
+Next we add MailSlurp to our Cypress tests. There are **two ways** to use MailSlurp with Cypress: 
+- either with the `cypress-mailslurp` plugin 
+- or by adding a command to register the `mailslurp-client` within your `cypress/support/commands.js` file.
 
 ### 1) Cypress MailSlurp Plugin
 
@@ -21,8 +53,7 @@ npm install --save-dev cypress-mailslurp
 Then include the plugin in your `cypress/support/index.{js,ts}` file.
 
 ```typescript
-// inside `cypress/support/e2e.js`
-import "cypress-mailslurp";
+import {MailSlurp} from "mailslurp-client";
 ```
 
 > **NOTE** you must import the MailSlurp plugin in `cypress/support/e2e.ts`
@@ -31,31 +62,26 @@ import "cypress-mailslurp";
 ### 2) Standalone MailSlurp client
 Install the [MailSlurp Javascript library](https://n) and then add MailSlurp as a [custom cypress command](https://docs.cypress.io/api/cypress-api/custom-commands).
 
-Install package from npm
+Install package from npm:
+
 ```sh
 npm install --save-dev mailslurp-client
 ```
 
 Edit one of the [custom commands files](https://docs.cypress.io/api/cypress-api/custom-commands) `cypress/support/commands.{ts,js}` or `cypress/support/e2e.{ts,js}` and register the MailSlurp command:
 
-```typescript
-import {MailSlurp} from "mailslurp-client";
-```
 
 ```typescript
-// read the API Key from environment variable
-// NOTE you need to set using this using the `CYPRESS_` prefix so `CYPRESS_MAILSLURP_API_KEY`
-// - windows: $Env:CYPRESS_MAILSLURP_API_KEY=your_mailslurp_api_key
-// - mac/linux: CYPRESS_MAILSLURP_API_KEY=your_mailslurp_api_key
+// read the API Key from environment variable (see the API Key section of README)
 const apiKey = Cypress.env('MAILSLURP_API_KEY');
 if (!apiKey) {
     throw new Error(
-        'Error no MailSlurp API Key. Please set the CYPRESS_MAILSLURP_API_KEY ' +
-        'environment variable to your MailSlurp API Key to use the MailSlurp Cypress plugin. ' +
-        'Create a free account at https://app.mailslurp.com/sign-up/'
+        'Error no MailSlurp API Key. Please set the `CYPRESS_MAILSLURP_API_KEY` ' +
+        'environment variable to the value of your MailSlurp API Key to use the MailSlurp Cypress plugin. ' +
+        'Create a free account at https://app.mailslurp.com/sign-up/. See https://docs.cypress.io/guides/guides/environment-variables#Option-3-CYPRESS_ for more information.'
     );
 }
-// create an instance of mailslurp
+// create an instance of mailslurp-client
 const mailslurp = new MailSlurp({ apiKey, basePath: 'https://cypress.api.mailslurp.com' });
 // register MailSlurp with cypress under "mailslurp" command
 // afterwards you can access it in tests using `cy.mailslurp().then(mailslurp => /* do stuff */)`
@@ -63,7 +89,6 @@ Cypress.Commands.add('mailslurp' as  any, () => {
     return Promise.resolve(mailslurp);
 });
 ```
-
 
 ## Setup
 MailSlurp is free but requires an API Key. Get yours by [creating a free account](https://www.mailslurp.com/sign-up/).
@@ -148,6 +173,23 @@ describe('basic usage', function () {
     expect(userInfo.id).to.exist
   })
 });
+describe('store values', function () {
+  //<gen>cy_store_values
+  before(function() {
+    return cy
+        .mailslurp()
+        .then(mailslurp => mailslurp.createInbox())
+        .then(inbox => {
+          // save inbox id and email address to this (make sure you use function and not arrow syntax)
+          cy.wrap(inbox.id).as('inboxId');
+          cy.wrap(inbox.emailAddress).as('emailAddress');
+        });
+  });
+  it('01 - can load the demo application', function() {
+    // get wrapped email address and assert contains a mailslurp email address
+    expect(this.emailAddress).to.contain('@mailslurp');
+  });
+  
 ```
 
 ### Common methods
@@ -166,6 +208,7 @@ cy.mailslurp()
 
 #### Receive emails in tests
 Use the `waitFor` methods to wait for emails for an inbox. See the [email object docs](https://www.mailslurp.com/docs/js/docs/interfaces/email/) for full properties.
+
 ```typescript
 cy.mailslurp()
     .then(mailslurp => mailslurp.waitForLatestEmail(undefined,undefined,inboxId,undefined,undefined, 30000, true))
@@ -195,25 +238,23 @@ cy.mailslurp().then(mailslurp => mailslurp.attachmentController.uploadAttachment
 Cypress has a unique async nature. To use MailSlurp effectively with Cypress chain your commands using [`then()`](https://docs.cypress.io/api/commands/then) or store results in wrapped aliases using [`wrap()`](https://docs.cypress.io/api/commands/wrap) and [`as()`](https://docs.cypress.io/api/commands/as).
 
 ```typescript
-before(function () {
-    return cy.mailslurp()
-        .then(mailslurp => mailslurp.createInbox())
-        .then(inbox => {
-            // save inbox id and email address to this (make sure you use function and not arrow syntax)
-            cy.wrap(inbox.id).as('inboxId')
-            cy.wrap(inbox.emailAddress).as('emailAddress')
-        })
+before(function() {
+  return cy
+      .mailslurp()
+      .then(mailslurp => mailslurp.createInbox())
+      .then(inbox => {
+        // save inbox id and email address to this (make sure you use function and not arrow syntax)
+        cy.wrap(inbox.id).as('inboxId');
+        cy.wrap(inbox.emailAddress).as('emailAddress');
+      });
 });
-it("01 - can load the demo application", function () {
-    // get wrapped email address and assert contains a mailslurp email address
-    expect(this.emailAddress).to.contain("@mailslurp");
-    // visit the demo application
-    cy.visit("https://playground.mailslurp.com")
-    cy.title().should('contain', 'React App');
+it('01 - can load the demo application', function() {
+  // get wrapped email address and assert contains a mailslurp email address
+  expect(this.emailAddress).to.contain('@mailslurp');
 });
 ```
 
-> **Note:** using `wrap` to store values accross test methods requires you to use `function` syntax instead of `() =>` arrow syntax. This ensure that `this` is dynamically scoped and includes the aliased variables.
+> **Note:** using `wrap` to store values across test methods requires you to use `function` syntax instead of `() =>` arrow syntax. This ensure that `this` is dynamically scoped and includes the aliased variables.
 
 ## Example test
 Here is an example of testing user sign up on a demo application hosted at [playground.mailslurp.com](https://playground.mailslurp.com). 
