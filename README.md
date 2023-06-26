@@ -60,7 +60,7 @@ import {MailSlurp} from "mailslurp-client";
 
 
 ### 2) Standalone MailSlurp client
-Install the [MailSlurp Javascript library](https://n) and then add MailSlurp as a [custom cypress command](https://docs.cypress.io/api/cypress-api/custom-commands).
+Install the [MailSlurp Javascript library](https://www.npmjs.com/package/mailslurp-client) and then add MailSlurp as a [custom cypress command](https://docs.cypress.io/api/cypress-api/custom-commands).
 
 Install package from npm:
 
