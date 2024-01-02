@@ -174,7 +174,7 @@ Cypress has a unique async nature. To use MailSlurp effectively with Cypress cha
 {{cy_store_values}}
 ```
 
-> ![NOTE]
+> [!NOTE]
 > Using `wrap` to store values across test methods requires you to use `function` syntax instead of `() =>` arrow syntax. This ensure that `this` is dynamically scoped and includes the aliased variables.
 
 ## Example test

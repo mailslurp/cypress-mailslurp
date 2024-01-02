@@ -263,7 +263,7 @@ it('can access values on this', function() {
 });
 ```
 
-> ![NOTE]
+> [!NOTE]
 > Using `wrap` to store values across test methods requires you to use `function` syntax instead of `() =>` arrow syntax. This ensure that `this` is dynamically scoped and includes the aliased variables.
 
 ## Example test
