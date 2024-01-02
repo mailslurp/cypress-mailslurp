@@ -1,21 +1,97 @@
 # MailSlurp Cypress Plugin
-Official MailSlurp email plugin for Cypress JS. Create real test email accounts. Send and receive emails and attachments in Cypress tests. For more advanced usage see the standard [MailSlurp library](https://www.npmjs.com/package/mailslurp-client).
+Official MailSlurp email plugin for Cypress JS. Create real test email accounts. Send and receive emails, SMS, and attachments in Cypress tests. For examplaes and usage see the standard [MailSlurp library](https://www.npmjs.com/package/mailslurp-client).
 
-## Quick links
+## Test email and SMS/TXT messages in Cypress
+With MailSlurp and Cypress you can:
+- create unlimited, disposable email addresses for testing
+- send and receive emails in tests
+- send and receive SMS messages in tests
+- capture outbound emails with fake mailservers
+- extract email verification codes and OTP magic links
+
+### Example
+
+```typescript
+it('can sign up using throwaway mailbox', function () {
+    // create a mailslurp instance
+    cy.mailslurp().then(function (mailslurp) {
+        // visit the demo application
+        cy.visit('/');
+        // create an email address and store it on this
+        cy.then(() => mailslurp.createInbox())
+            .then((inbox) => {
+                // save inbox id and email address to this
+                cy.wrap(inbox.id).as('inboxId');
+                cy.wrap(inbox.emailAddress).as('emailAddress');
+            })
+        // fill user details on app
+        cy.get('[data-test=sign-in-create-account-link]').click()
+        cy.then(function () {
+            // access stored email on this, make sure you use Function and not () => {} syntax for correct scope
+            cy.get('[name=email]').type(this.emailAddress)
+            cy.get('[name=password]').type('test-password')
+            return cy.get('[data-test=sign-up-create-account-button]').click();
+        })
+        // now wait for confirmation mail
+        cy.then({
+            // add timeout to the step to allow email to arrive
+            timeout: 60_000
+        }, function () {
+            return mailslurp
+                // wait for the email to arrive in the inbox
+                .waitForLatestEmail(this.inboxId, 60_000, true)
+                // extract the code with a pattern
+                .then(email => mailslurp.emailController.getEmailContentMatch({
+                    emailId: email.id,
+                    contentMatchOptions: {
+                        // regex pattern to extract verification code
+                        pattern: 'Your Demo verification code is ([0-9]{6})'
+                    }
+                }))
+                // save the verification code to this
+                .then(({ matches }) => cy.wrap(matches[1]).as('verificationCode'))
+        });
+        // confirm the user with the verification code
+        cy.then(function () {
+            cy.get('[name=code]').type(this.verificationCode)
+            cy.get('[data-test=confirm-sign-up-confirm-button]').click()
+            // use the email address and a test password
+            cy.get('[data-test=username-input]').type(this.emailAddress)
+            cy.get('[data-test=sign-in-password-input]').type('test-password')
+            // click the submit button
+            return cy.get('[data-test=sign-in-sign-in-button]').click();
+        })
+        cy.get('h1').should('contain', 'Welcome');
+    });
+});
+```
+
+### Quick links
+- [API documentation](https://docs.mailslurp.com/js/)
+- [JSDocs](https://js.mailslurp.com/)
 - [Example project](https://github.com/mailslurp/examples/tree/master/javascript-cypress-mailslurp-plugin)
 - [Use without plugin](https://github.com/mailslurp/examples/tree/master/javascript-cypress-js)
 - [SMS testing](https://github.com/mailslurp/examples/tree/master/javascript-cypress-sms-testing)
+- [Test email verification](https://www.mailslurp.com/examples/cypress-js/)
 
+## Install
+Ensure you have Cypress installed first then run:
 
-## Install Cypress
-
-First install and initialize Cypress:
-
+```sh
+npm install --save-dev cypress-mailslurp
 ```
-npm install --save-dev cypress
+
+Then include the plugin in your `cypress/support/index.{js,ts}` file.
+
+```typescript
+import {Config, MailSlurp} from "mailslurp-client";
 ```
 
-Set command timeouts in your `cypress.config.js`
+> [!IMPORTANT]  
+> You must import/require `cypress-mailslurp` in your support file `cypress/support/e2e.ts` or `cypress/support/index.{js,ts}`
+
+### Configuration
+You can set Cypress config to include MailSlurp in `cypress.config.js`:
 
 ```typescript
 import { defineConfig } from 'cypress'
@@ -26,8 +102,6 @@ export default defineConfig({
   responseTimeout: 30000,
   requestTimeout: 30000,
   e2e: {
-    // We've imported your old cypress plugins here.
-    // You may want to clean this up later by importing these.
     setupNodeEvents(on, config) {
       return require('./cypress/plugins/index.js')(on, config)
     },
@@ -37,57 +111,6 @@ export default defineConfig({
     testIsolation: false
   },
 })
-```
-
-## Install MailSlurp
-Next we add MailSlurp to our Cypress tests. There are **two ways** to use MailSlurp with Cypress: 
-- either with the `cypress-mailslurp` plugin 
-- or by adding a command to register the `mailslurp-client` within your `cypress/support/commands.js` file.
-
-### 1) Cypress MailSlurp Plugin
-
-```sh
-npm install --save-dev cypress-mailslurp
-```
-
-Then include the plugin in your `cypress/support/index.{js,ts}` file.
-
-```typescript
-import {MailSlurp} from "mailslurp-client";
-```
-
-> **NOTE** you must import the MailSlurp plugin in `cypress/support/e2e.ts`
-
-
-### 2) Standalone MailSlurp client
-Install the [MailSlurp Javascript library](https://www.npmjs.com/package/mailslurp-client) and then add MailSlurp as a [custom cypress command](https://docs.cypress.io/api/cypress-api/custom-commands).
-
-Install package from npm:
-
-```sh
-npm install --save-dev mailslurp-client
-```
-
-Edit one of the [custom commands files](https://docs.cypress.io/api/cypress-api/custom-commands) `cypress/support/commands.{ts,js}` or `cypress/support/e2e.{ts,js}` and register the MailSlurp command:
-
-
-```typescript
-// read the API Key from environment variable (see the API Key section of README)
-const apiKey = Cypress.env('MAILSLURP_API_KEY');
-if (!apiKey) {
-    throw new Error(
-        'Error no MailSlurp API Key. Please set the `CYPRESS_MAILSLURP_API_KEY` ' +
-        'environment variable to the value of your MailSlurp API Key to use the MailSlurp Cypress plugin. ' +
-        'Create a free account at https://app.mailslurp.com/sign-up/. See https://docs.cypress.io/guides/guides/environment-variables#Option-3-CYPRESS_ for more information.'
-    );
-}
-// create an instance of mailslurp-client
-const mailslurp = new MailSlurp({ apiKey, basePath: 'https://cypress.api.mailslurp.com' });
-// register MailSlurp with cypress under "mailslurp" command
-// afterwards you can access it in tests using `cy.mailslurp().then(mailslurp => /* do stuff */)`
-Cypress.Commands.add('mailslurp' as  any, () => {
-    return Promise.resolve(mailslurp);
-});
 ```
 
 ## Setup
@@ -165,31 +188,61 @@ cy.mailslurp().then(mailslurp => mailslurp.createInbox() /* etc */)
 You can test that you have setup MailSlurp correctly in a test like so:
 
 ```typescript
-describe('basic usage', function () {
-  it('can load the plugin', async function () {
-    // test we can connect to mailslurp
-    const mailslurp = await cy.mailslurp();
-    const userInfo = await mailslurp.userController.getUserInfo();
-    expect(userInfo.id).to.exist
-  })
-});
-describe('store values', function () {
-  //<gen>cy_store_values
-  before(function() {
-    return cy
-        .mailslurp()
-        .then(mailslurp => mailslurp.createInbox())
-        .then(inbox => {
-          // save inbox id and email address to this (make sure you use function and not arrow syntax)
-          cy.wrap(inbox.id).as('inboxId');
-          cy.wrap(inbox.emailAddress).as('emailAddress');
+describe('sign up using disposable email', function () {
+    //<gen>cy_example_short
+    it('can sign up using throwaway mailbox', function () {
+        // create a mailslurp instance
+        cy.mailslurp().then(function (mailslurp) {
+            // visit the demo application
+            cy.visit('/');
+            // create an email address and store it on this
+            cy.then(() => mailslurp.createInbox())
+                .then((inbox) => {
+                    // save inbox id and email address to this
+                    cy.wrap(inbox.id).as('inboxId');
+                    cy.wrap(inbox.emailAddress).as('emailAddress');
+                })
+            // fill user details on app
+            cy.get('[data-test=sign-in-create-account-link]').click()
+            cy.then(function () {
+                // access stored email on this, make sure you use Function and not () => {} syntax for correct scope
+                cy.get('[name=email]').type(this.emailAddress)
+                cy.get('[name=password]').type('test-password')
+                return cy.get('[data-test=sign-up-create-account-button]').click();
+            })
+            // now wait for confirmation mail
+            cy.then({
+                // add timeout to the step to allow email to arrive
+                timeout: 60_000
+            }, function () {
+                return mailslurp
+                    // wait for the email to arrive in the inbox
+                    .waitForLatestEmail(this.inboxId, 60_000, true)
+                    // extract the code with a pattern
+                    .then(email => mailslurp.emailController.getEmailContentMatch({
+                        emailId: email.id,
+                        contentMatchOptions: {
+                            // regex pattern to extract verification code
+                            pattern: 'Your Demo verification code is ([0-9]{6})'
+                        }
+                    }))
+                    // save the verification code to this
+                    .then(({ matches }) => cy.wrap(matches[1]).as('verificationCode'))
+            });
+            // confirm the user with the verification code
+            cy.then(function () {
+                cy.get('[name=code]').type(this.verificationCode)
+                cy.get('[data-test=confirm-sign-up-confirm-button]').click()
+                // use the email address and a test password
+                cy.get('[data-test=username-input]').type(this.emailAddress)
+                cy.get('[data-test=sign-in-password-input]').type('test-password')
+                // click the submit button
+                return cy.get('[data-test=sign-in-sign-in-button]').click();
+            })
+            cy.get('h1').should('contain', 'Welcome');
         });
-  });
-  it('can access values on this', function() {
-    // get wrapped email address and assert contains a mailslurp email address
-    expect(this.emailAddress).to.contain('@mailslurp');
-  });
-  
+    });
+    
 ```
 
 ### Common methods
@@ -201,27 +254,44 @@ The MailSlurp client has a number of convenience methods and also exposes the fu
 You can create test email accounts with MailSlurp by creating inboxes. Inboxes have an `id` and an `emailAddress`. Save the `id` for later use when fetching or sending emails.
 
 ```typescript
-cy.mailslurp()
-    .then(mailslurp => mailslurp.createInbox())
-    .then(inbox => expect(inbox.emailAddress).to.contain("@mailslurp"));
-```
-
-#### Receive emails in tests
-Use the `waitFor` methods to wait for emails for an inbox. See the [email object docs](https://www.mailslurp.com/docs/js/docs/interfaces/email/) for full properties.
-
-```typescript
-cy.mailslurp()
-    .then(mailslurp => mailslurp.waitForLatestEmail(undefined,undefined,inboxId,undefined,undefined, 30000, true))
-    .then(email => expect(email.subject).to.contain("My email"))
+await cy.mailslurp()
+    .then((mailslurp: MailSlurp) => mailslurp.createInboxWithOptions({}))
+    .then(inbox => {
+      expect(inbox.emailAddress).to.contain("@mailslurp")
+      // save the inbox values for access in other tests
+      cy.wrap(inbox.id).as('inboxId')
+      cy.wrap(inbox.emailAddress).as('emailAddress')
+    })
 ```
 
 #### Send emails
 To send emails in Cypress tests first create an inbox then use the `sendEmail` method.
 
 ```typescript
-cy.mailslurp()
-    .then(mailslurp => mailslurp.sendEmail(inboxId, { to: ['test@example.com'], subject: 'test', body: '<html></html>', isHTML: true }))
+await cy.mailslurp()
+    .then((mailslurp: MailSlurp) => mailslurp.sendEmail(this.inboxId, {
+      to: [this.emailAddress  ],
+      subject: 'Email confirmation',
+      body: 'Your code is: ABC-123',
+    }))
 ```
+
+#### Receive emails in tests
+Use the `waitFor` methods to wait for emails for an inbox. See the [email object docs](https://www.mailslurp.com/docs/js/docs/interfaces/email/) for full properties.
+
+```typescript
+cy.log("Waiting for email")
+await cy.mailslurp().then({
+    // set a long timeout when waiting for an email to arrive
+    timeout: 60_000,
+}, (mailslurp: MailSlurp) => mailslurp.waitForLatestEmail(this.inboxId, 60_000, true))
+    .then(email => {
+        expect(email.subject).toContain('Email confirmation')
+        const code = email.body.match(/Your code is: (\w+-\d+)/)[1]
+        expect(code).toEqual('ABC-1223')
+    })
+```
+
 
 #### Accessing more methods
 To access all the MailSlurp methods available in the [REST API](https://api.mailslurp.com/swagger-ui.html) and [Javascript Client](https://www.mailslurp.com/docs/js/) use the controllers on the mailslurp instance.
