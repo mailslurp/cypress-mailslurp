@@ -1,6 +1,4 @@
-//<gen>cy_config
 import { defineConfig } from 'cypress'
-
 export default defineConfig({
   // set timeouts so MailSlurp can wait for emails and sms
   defaultCommandTimeout: 30000,
@@ -16,4 +14,3 @@ export default defineConfig({
     testIsolation: false
   },
 })
-//</gen>

@@ -40,18 +40,10 @@ Then include the plugin in your `cypress/support/index.{js,ts}` file.
 > You must import/require `cypress-mailslurp` in your support file `cypress/support/e2e.ts` or `cypress/support/index.{js,ts}`
 
 ### Configuration
-You can set Cypress config to include MailSlurp in `cypress.config.js`:
-
-```typescript
-{{cy_config}}
-```
-
-## Setup
-MailSlurp is free but requires an API Key. Get yours by [creating a free account](https://www.mailslurp.com/sign-up/).
-
-See the [example project](https://github.com/mailslurp/examples/tree/master/javascript-cypress-mailslurp-plugin) for setup help. 
+See the [example project](https://github.com/mailslurp/examples/tree/master/javascript-cypress-mailslurp-plugin) for example code.
 
 ### API Key
+MailSlurp is free but requires an API Key. Get yours by [creating a free account](https://www.mailslurp.com/sign-up/).
 Set the environment variable `CYPRESS_MAILSLURP_API_KEY` or use the `cypress.json` file `env` property:
 
 #### Environment variable
@@ -79,8 +71,15 @@ You can also configure Cypress using the config format.
 }
 ```
 
-#### Timeouts
-MailSlurp requires timeouts to wait for inbound emails. Set timeouts in `cypress.json`:
+#### Configure dynamically
+You can also pass the `cy.mailslurp()` function a config containing an `apiKey` like so:
+
+```typescript
+{{cy_config_dynamic}}
+```
+
+### Timeouts
+MailSlurp requires timeouts to wait for inbound emails. You can set global timeouts in `cypress.json`:
 
 ```json
 {
@@ -89,6 +88,8 @@ MailSlurp requires timeouts to wait for inbound emails. Set timeouts in `cypress
   "requestTimeout": 30000
 }
 ```
+
+Or you can set timeouts on a per-method basis using `cy.then({ timeout: 60_000 }, () => { /* use mailslurp */ })`
 
 #### Typescript support
 MailSlurp adds the `mailslurp` command to the Cypress `cy` object. Include the type definition reference comment in your test file or support index.ts:
@@ -169,7 +170,8 @@ Cypress has a unique async nature. To use MailSlurp effectively with Cypress cha
 {{cy_store_values}}
 ```
 
-> **Note:** using `wrap` to store values across test methods requires you to use `function` syntax instead of `() =>` arrow syntax. This ensure that `this` is dynamically scoped and includes the aliased variables.
+> ![NOTE]
+> Using `wrap` to store values across test methods requires you to use `function` syntax instead of `() =>` arrow syntax. This ensure that `this` is dynamically scoped and includes the aliased variables.
 
 ## Example test
 Here is an example of testing user sign up on a demo application hosted at [playground.mailslurp.com](https://playground.mailslurp.com). 

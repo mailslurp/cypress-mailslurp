@@ -2,6 +2,11 @@
 /// <reference types="../../src" />
 //<gen>cy_plugin_test_usage
 describe('sign up using disposable email', function () {
+    it('can set config', () => {
+        //<gen>cy_config_dynamic
+        cy.mailslurp({apiKey: 'YOUR_KEY'})
+        //</gen>
+    })
     //<gen>cy_example_short
     it('can sign up using throwaway mailbox', function () {
         // create a mailslurp instance
@@ -40,7 +45,7 @@ describe('sign up using disposable email', function () {
                         }
                     }))
                     // save the verification code to this
-                    .then(({ matches }) => cy.wrap(matches[1]).as('verificationCode'))
+                    .then(({matches}) => cy.wrap(matches[1]).as('verificationCode'))
             });
             // confirm the user with the verification code
             cy.then(function () {

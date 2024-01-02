@@ -49,7 +49,7 @@ it('can sign up using throwaway mailbox', function () {
                     }
                 }))
                 // save the verification code to this
-                .then(({ matches }) => cy.wrap(matches[1]).as('verificationCode'))
+                .then(({matches}) => cy.wrap(matches[1]).as('verificationCode'))
         });
         // confirm the user with the verification code
         cy.then(function () {
@@ -91,34 +91,10 @@ import {Config, MailSlurp} from "mailslurp-client";
 > You must import/require `cypress-mailslurp` in your support file `cypress/support/e2e.ts` or `cypress/support/index.{js,ts}`
 
 ### Configuration
-You can set Cypress config to include MailSlurp in `cypress.config.js`:
-
-```typescript
-import { defineConfig } from 'cypress'
-
-export default defineConfig({
-  // set timeouts so MailSlurp can wait for emails and sms
-  defaultCommandTimeout: 30000,
-  responseTimeout: 30000,
-  requestTimeout: 30000,
-  e2e: {
-    setupNodeEvents(on, config) {
-      return require('./cypress/plugins/index.js')(on, config)
-    },
-    // examples run against the playground app
-    baseUrl: 'https://playground.mailslurp.com',
-    // these examples require no test isolation
-    testIsolation: false
-  },
-})
-```
-
-## Setup
-MailSlurp is free but requires an API Key. Get yours by [creating a free account](https://www.mailslurp.com/sign-up/).
-
-See the [example project](https://github.com/mailslurp/examples/tree/master/javascript-cypress-mailslurp-plugin) for setup help. 
+See the [example project](https://github.com/mailslurp/examples/tree/master/javascript-cypress-mailslurp-plugin) for example code.
 
 ### API Key
+MailSlurp is free but requires an API Key. Get yours by [creating a free account](https://www.mailslurp.com/sign-up/).
 Set the environment variable `CYPRESS_MAILSLURP_API_KEY` or use the `cypress.json` file `env` property:
 
 #### Environment variable
@@ -146,8 +122,15 @@ You can also configure Cypress using the config format.
 }
 ```
 
-#### Timeouts
-MailSlurp requires timeouts to wait for inbound emails. Set timeouts in `cypress.json`:
+#### Configure dynamically
+You can also pass the `cy.mailslurp()` function a config containing an `apiKey` like so:
+
+```typescript
+cy.mailslurp({apiKey: 'YOUR_KEY'})
+```
+
+### Timeouts
+MailSlurp requires timeouts to wait for inbound emails. You can set global timeouts in `cypress.json`:
 
 ```json
 {
@@ -156,6 +139,8 @@ MailSlurp requires timeouts to wait for inbound emails. Set timeouts in `cypress
   "requestTimeout": 30000
 }
 ```
+
+Or you can set timeouts on a per-method basis using `cy.then({ timeout: 60_000 }, () => { /* use mailslurp */ })`
 
 #### Typescript support
 MailSlurp adds the `mailslurp` command to the Cypress `cy` object. Include the type definition reference comment in your test file or support index.ts:
@@ -189,60 +174,10 @@ You can test that you have setup MailSlurp correctly in a test like so:
 
 ```typescript
 describe('sign up using disposable email', function () {
-    //<gen>cy_example_short
-    it('can sign up using throwaway mailbox', function () {
-        // create a mailslurp instance
-        cy.mailslurp().then(function (mailslurp) {
-            // visit the demo application
-            cy.visit('/');
-            // create an email address and store it on this
-            cy.then(() => mailslurp.createInbox())
-                .then((inbox) => {
-                    // save inbox id and email address to this
-                    cy.wrap(inbox.id).as('inboxId');
-                    cy.wrap(inbox.emailAddress).as('emailAddress');
-                })
-            // fill user details on app
-            cy.get('[data-test=sign-in-create-account-link]').click()
-            cy.then(function () {
-                // access stored email on this, make sure you use Function and not () => {} syntax for correct scope
-                cy.get('[name=email]').type(this.emailAddress)
-                cy.get('[name=password]').type('test-password')
-                return cy.get('[data-test=sign-up-create-account-button]').click();
-            })
-            // now wait for confirmation mail
-            cy.then({
-                // add timeout to the step to allow email to arrive
-                timeout: 60_000
-            }, function () {
-                return mailslurp
-                    // wait for the email to arrive in the inbox
-                    .waitForLatestEmail(this.inboxId, 60_000, true)
-                    // extract the code with a pattern
-                    .then(email => mailslurp.emailController.getEmailContentMatch({
-                        emailId: email.id,
-                        contentMatchOptions: {
-                            // regex pattern to extract verification code
-                            pattern: 'Your Demo verification code is ([0-9]{6})'
-                        }
-                    }))
-                    // save the verification code to this
-                    .then(({ matches }) => cy.wrap(matches[1]).as('verificationCode'))
-            });
-            // confirm the user with the verification code
-            cy.then(function () {
-                cy.get('[name=code]').type(this.verificationCode)
-                cy.get('[data-test=confirm-sign-up-confirm-button]').click()
-                // use the email address and a test password
-                cy.get('[data-test=username-input]').type(this.emailAddress)
-                cy.get('[data-test=sign-in-password-input]').type('test-password')
-                // click the submit button
-                return cy.get('[data-test=sign-in-sign-in-button]').click();
-            })
-            cy.get('h1').should('contain', 'Welcome');
-        });
-    });
-    
+    it('can set config', () => {
+        //<gen>cy_config_dynamic
+        cy.mailslurp({apiKey: 'YOUR_KEY'})
+        
 ```
 
 ### Common methods
@@ -324,7 +259,8 @@ it('can access values on this', function() {
 });
 ```
 
-> **Note:** using `wrap` to store values across test methods requires you to use `function` syntax instead of `() =>` arrow syntax. This ensure that `this` is dynamically scoped and includes the aliased variables.
+> ![NOTE]
+> Using `wrap` to store values across test methods requires you to use `function` syntax instead of `() =>` arrow syntax. This ensure that `this` is dynamically scoped and includes the aliased variables.
 
 ## Example test
 Here is an example of testing user sign up on a demo application hosted at [playground.mailslurp.com](https://playground.mailslurp.com). 
