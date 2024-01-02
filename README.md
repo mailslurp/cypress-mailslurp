@@ -7,12 +7,12 @@ Official MailSlurp email plugin for Cypress JS. Create real test email accounts.
 - [SMS testing](https://github.com/mailslurp/examples/tree/master/javascript-cypress-sms-testing)
 
 
-## Install Cypress
+## Install
 
-First install and initialize Cypress:
+Install Cypress and the cypress-mailslurp plugin:
 
 ```
-npm install --save-dev cypress
+npm install --save-dev cypress cypress-mailslurp
 ```
 
 Set command timeouts in your `cypress.config.js`
@@ -118,13 +118,23 @@ You can also configure Cypress using the config format.
 ```json
 {
   "env": {
-    "MAILSLURP_API_KEY": "your-mailslurp-api-key"
+    "`MAILSLURP_API_KEY`": "your-mailslurp-api-key"
   }
 }
 ```
 
+Or using the `cypress.config.js` file:
+
+```typescript
+module.exports = defineConfig({
+    env: {
+        MAILSLURP_API_KEY: "your-mailslurp-api-key",
+    },
+});
+```
+
 #### Timeouts
-MailSlurp requires timeouts to wait for inbound emails. Set timeouts in `cypress.json`:
+MailSlurp requires timeouts to wait for inbound emails. You have a few options, either set timeouts in `cypress.json`:
 
 ```json
 {
@@ -132,6 +142,17 @@ MailSlurp requires timeouts to wait for inbound emails. Set timeouts in `cypress
   "responseTimeout": 30000,
   "requestTimeout": 30000
 }
+```
+
+Or set them on a per method basis:
+
+```
+cy.mailslurp().then(
+  { timeout: 60000 }, // first arg can be an options object instead of the callback
+  mailslurp => {
+    mailslurp.createInbox()
+  }
+)
 ```
 
 #### Typescript support

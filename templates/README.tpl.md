@@ -1,32 +1,24 @@
 # MailSlurp Cypress Plugin
-Official MailSlurp email plugin for Cypress JS. Create real test email accounts. Send and receive emails and attachments in Cypress tests. For more advanced usage see the standard [MailSlurp library](https://www.npmjs.com/package/mailslurp-client).
+Official MailSlurp email plugin for Cypress JS. Create real test email accounts. Send and receive emails, SMS, and attachments in Cypress tests. For more advanced usage see the standard [MailSlurp library](https://www.npmjs.com/package/mailslurp-client).
 
-## Quick links
+## Test email and SMS/TXT messages in Cypress
+With MailSlurp and Cypress you can:
+- create unlimited, disposable email addresses for testing
+- send and receive emails in tests
+- send and receive SMS messages in tests
+- capture outbound emails with fake mailservers
+- extract email verification codes and OTP magic links
+
+### Example
+
+### Quick links
 - [Example project](https://github.com/mailslurp/examples/tree/master/javascript-cypress-mailslurp-plugin)
 - [Use without plugin](https://github.com/mailslurp/examples/tree/master/javascript-cypress-js)
 - [SMS testing](https://github.com/mailslurp/examples/tree/master/javascript-cypress-sms-testing)
+- [Test email verification](https://www.mailslurp.com/examples/cypress-js/)
 
-
-## Install Cypress
-
-First install and initialize Cypress:
-
-```
-npm install --save-dev cypress
-```
-
-Set command timeouts in your `cypress.config.js`
-
-```typescript
-{{cy_config}}
-```
-
-## Install MailSlurp
-Next we add MailSlurp to our Cypress tests. There are **two ways** to use MailSlurp with Cypress: 
-- either with the `cypress-mailslurp` plugin 
-- or by adding a command to register the `mailslurp-client` within your `cypress/support/commands.js` file.
-
-### 1) Cypress MailSlurp Plugin
+## Install
+Ensure you have Cypress installed first then run:
 
 ```sh
 npm install --save-dev cypress-mailslurp
@@ -38,23 +30,13 @@ Then include the plugin in your `cypress/support/index.{js,ts}` file.
 {{cy_import_mailslurp}}
 ```
 
-> **NOTE** you must import the MailSlurp plugin in `cypress/support/e2e.ts`
+> **NOTE** you must import the MailSlurp plugin in `cypress/support/e2e.ts` or `cypress/support/index.{js,ts}`
 
-
-### 2) Standalone MailSlurp client
-Install the [MailSlurp Javascript library](https://n) and then add MailSlurp as a [custom cypress command](https://docs.cypress.io/api/cypress-api/custom-commands).
-
-Install package from npm:
-
-```sh
-npm install --save-dev mailslurp-client
-```
-
-Edit one of the [custom commands files](https://docs.cypress.io/api/cypress-api/custom-commands) `cypress/support/commands.{ts,js}` or `cypress/support/e2e.{ts,js}` and register the MailSlurp command:
-
+### Configuration
+You can set Cypress config to include MailSlurp in `cypress.config.js`:
 
 ```typescript
-{{cy_add_plugin}}
+{{cy_config}}
 ```
 
 ## Setup
@@ -143,28 +125,18 @@ The MailSlurp client has a number of convenience methods and also exposes the fu
 #### Create email address
 You can create test email accounts with MailSlurp by creating inboxes. Inboxes have an `id` and an `emailAddress`. Save the `id` for later use when fetching or sending emails.
 
-```typescript
-cy.mailslurp()
-    .then(mailslurp => mailslurp.createInbox())
-    .then(inbox => expect(inbox.emailAddress).to.contain("@mailslurp"));
-```
-
-#### Receive emails in tests
-Use the `waitFor` methods to wait for emails for an inbox. See the [email object docs](https://www.mailslurp.com/docs/js/docs/interfaces/email/) for full properties.
-
-```typescript
-cy.mailslurp()
-    .then(mailslurp => mailslurp.waitForLatestEmail(undefined,undefined,inboxId,undefined,undefined, 30000, true))
-    .then(email => expect(email.subject).to.contain("My email"))
-```
+{{cy_plugin_create_inbox}}
 
 #### Send emails
 To send emails in Cypress tests first create an inbox then use the `sendEmail` method.
 
-```typescript
-cy.mailslurp()
-    .then(mailslurp => mailslurp.sendEmail(inboxId, { to: ['test@example.com'], subject: 'test', body: '<html></html>', isHTML: true }))
-```
+{{cy_plugin_send_email}}
+
+#### Receive emails in tests
+Use the `waitFor` methods to wait for emails for an inbox. See the [email object docs](https://www.mailslurp.com/docs/js/docs/interfaces/email/) for full properties.
+
+{{cy_plugin_wait}}
+
 
 #### Accessing more methods
 To access all the MailSlurp methods available in the [REST API](https://api.mailslurp.com/swagger-ui.html) and [Javascript Client](https://www.mailslurp.com/docs/js/) use the controllers on the mailslurp instance.
