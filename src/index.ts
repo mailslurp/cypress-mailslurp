@@ -28,12 +28,12 @@ function register(Cypress: Cypress.Cypress) {
             })
         });
     };
-    Cypress.Commands.add('mailslurp' as any, getMailSlurp);
-    Cypress.Commands.add('createEmailAddress' as any, createInbox)
-    Cypress.Commands.add('createInbox' as any, createInbox)
+    Cypress.Commands.add('mailslurp' as any, getMailSlurp as any);
+    Cypress.Commands.add('createEmailAddress' as any, createInbox as any)
+    Cypress.Commands.add('createInbox' as any, createInbox as any)
     Cypress.Commands.add('getEmail' as any, ((options?: WaitForConditions) => {
         return getMailSlurp().then((mailslurp: MailSlurp)=> {
-            const inboxId = options?.inboxId ?? this.inboxId
+            const inboxId = options?.inboxId ?? (this as any).inboxId
             const opts = { ...options, inboxId, timeout: options?.timeout ?? 120_000 }
                     return mailslurp.waitController.waitFor({ waitForConditions: opts })
         });
