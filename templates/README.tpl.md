@@ -1,5 +1,5 @@
 # MailSlurp Cypress Plugin
-Official MailSlurp email plugin for Cypress JS. Create real test email accounts. Send and receive emails, SMS, and attachments in Cypress tests. For examplaes and usage see the standard [MailSlurp library](https://www.npmjs.com/package/mailslurp-client).
+Official MailSlurp email plugin for Cypress JS. Create real test email accounts. Send and receive emails, SMS, and attachments in Cypress tests. For examples and usage see the standard [MailSlurp library](https://www.npmjs.com/package/mailslurp-client).
 
 ## Test email and SMS/TXT messages in Cypress
 With MailSlurp and Cypress you can:
