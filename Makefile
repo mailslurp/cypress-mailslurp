@@ -3,9 +3,6 @@
 fmt:
 	npm run lint
 
-test:
-	npm run test
-
 build:
 	npm run build
 	cp src/index.d.ts dist/index.d.ts

@@ -1,9 +1,9 @@
 /// <reference types="./">
 //<gen>cy_import_mailslurp
-import {Config, MailSlurp, CreateInboxDto, WaitForConditions, InboxDto} from "mailslurp-client";
+import {Config, MailSlurp} from "mailslurp-client";
 //</gen>
 function register(Cypress: Cypress.Cypress) {
-    const getMailSlurp = (config?: Config) => {
+    Cypress.Commands.add('mailslurp' as any, ((config?: Config) => {
         // read the API Key from environment variable (see the API Key section of README)
         const apiKey = config?.apiKey ?? Cypress.env('MAILSLURP_API_KEY');
         if (!apiKey) {
@@ -15,28 +15,6 @@ function register(Cypress: Cypress.Cypress) {
         }
         const mailslurp = new MailSlurp({ ...config, apiKey, basePath: 'https://cypress.api.mailslurp.com' });
         return Promise.resolve(mailslurp);
-    }
-    const createInbox = (options: CreateInboxDto = {}) => {
-        return getMailSlurp().then((mailslurp: MailSlurp)=> {
-            return mailslurp.createInboxWithOptions(options).then((inbox: InboxDto) => {
-                cy.wrap({
-                    inbox: inbox,
-                    inboxId: inbox.id,
-                    emailAddress: inbox.emailAddress
-                })
-                return inbox
-            })
-        });
-    };
-    Cypress.Commands.add('mailslurp' as any, getMailSlurp as any);
-    Cypress.Commands.add('createEmailAddress' as any, createInbox as any)
-    Cypress.Commands.add('createInbox' as any, createInbox as any)
-    Cypress.Commands.add('getEmail' as any, ((options?: WaitForConditions) => {
-        return getMailSlurp().then((mailslurp: MailSlurp)=> {
-            const inboxId = options?.inboxId ?? (this as any).inboxId
-            const opts = { ...options, inboxId, timeout: options?.timeout ?? 120_000 }
-                    return mailslurp.waitController.waitFor({ waitForConditions: opts })
-        });
-    }) as any)
+    }) as any);
 }
 register(Cypress);
