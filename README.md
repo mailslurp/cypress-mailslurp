@@ -1,5 +1,5 @@
 # MailSlurp Cypress Plugin
-Official MailSlurp email plugin for Cypress JS. Create real test email accounts. Send and receive emails, SMS, and attachments in Cypress tests. For examplaes and usage see the standard [MailSlurp library](https://www.npmjs.com/package/mailslurp-client).
+Official MailSlurp email plugin for Cypress JS. Create real test email accounts. Send and receive emails, SMS, and attachments in Cypress tests. For examples and usage see the standard [MailSlurp library](https://www.npmjs.com/package/mailslurp-client).
 
 ## Test email and SMS/TXT messages in Cypress
 With MailSlurp and Cypress you can:
@@ -140,7 +140,11 @@ MailSlurp requires timeouts to wait for inbound emails. You can set global timeo
 }
 ```
 
-Or you can set timeouts on a per-method basis using `cy.then({ timeout: 60_000 }, () => { /* use mailslurp */ })`
+Or you can set timeouts on a per-method basis using the first argument as a timeout config: 
+
+```typescript
+cy.then({ timeout: 60_000 }, () => { /* use mailslurp */ })
+```
 
 #### Typescript support
 MailSlurp adds the `mailslurp` command to the Cypress `cy` object. Include the type definition reference comment in your test file or support index.ts:

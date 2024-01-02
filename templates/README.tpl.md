@@ -89,7 +89,11 @@ MailSlurp requires timeouts to wait for inbound emails. You can set global timeo
 }
 ```
 
-Or you can set timeouts on a per-method basis using `cy.then({ timeout: 60_000 }, () => { /* use mailslurp */ })`
+Or you can set timeouts on a per-method basis using the first argument as a timeout config: 
+
+```typescript
+cy.then({ timeout: 60_000 }, () => { /* use mailslurp */ })
+```
 
 #### Typescript support
 MailSlurp adds the `mailslurp` command to the Cypress `cy` object. Include the type definition reference comment in your test file or support index.ts:
