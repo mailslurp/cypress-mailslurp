@@ -11,12 +11,11 @@
  * Replaces `{{block_name}}` in README tpl with the content of the block
  * Writes over <rootDir>/README.md
  */
-const debug = require('debug');
 const fs =require( 'fs');
 const { join } =require("path");
 const glob =require("fast-glob");
 const { diff } = require("jest-diff");
-const log = debug("script/readme")
+const log = console.log
 const commentStart='\/\/<gen>'
 const commentEnd='\/\/</gen>'
 

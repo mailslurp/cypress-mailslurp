@@ -30,7 +30,6 @@
   "module": "dist/cypress-mailslurp.esm.js",
   "devDependencies": {
     "cypress": "^13.6.2",
-    "debug": "^4.3.4",
     "eslint-plugin-chai-friendly": "^0.6.0",
     "eslint-plugin-cypress": "^2.15.1",
     "fast-glob": "^3.3.2",
