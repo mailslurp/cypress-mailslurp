@@ -84,7 +84,7 @@ npm install --save-dev cypress-mailslurp
 Then include the plugin in your `cypress/support/index.{js,ts}` file.
 
 ```typescript
-import {Config, MailSlurp} from "mailslurp-client";
+import 'cypress-mailslurp';
 ```
 
 > [!IMPORTANT]  

@@ -1,7 +1,5 @@
 /// <reference types="./">
-//<gen>cy_import_mailslurp
 import {Config, MailSlurp} from "mailslurp-client";
-//</gen>
 function register(Cypress: Cypress.Cypress) {
     Cypress.Commands.add('mailslurp' as any, ((config?: Config) => {
         // read the API Key from environment variable (see the API Key section of README)
