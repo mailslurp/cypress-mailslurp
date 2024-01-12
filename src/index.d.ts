@@ -1,10 +1,10 @@
 /// <reference types="cypress" />
-import { MailSlurp } from "mailslurp-client";
+import { MailSlurp, Config } from "mailslurp-client";
 
 declare global {
     namespace Cypress {
         interface Chainable {
-            mailslurp: () => Promise<MailSlurp>;
+            mailslurp: (config?: Config) => Promise<MailSlurp>;
         }
     }
 }

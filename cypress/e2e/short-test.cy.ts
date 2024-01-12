@@ -4,8 +4,17 @@
 describe('sign up using disposable email', function () {
     it('can set config', () => {
         //<gen>cy_config_dynamic
-        cy.mailslurp({apiKey: 'YOUR_KEY'})
+        cy.mailslurp({ apiKey: 'YOUR_KEY' })
         //</gen>
+    })
+    it('can set config and use', () => {
+        cy.mailslurp({ apiKey: Cypress.env("MAILSLURP_API_KEY") })
+            .then((mailslurp) => {
+                cy.then(() => mailslurp.createInbox())
+                    .then(inbox => {
+                        expect(inbox).to.exist
+                    })
+            })
     })
     //<gen>cy_example_short
     it('can sign up using throwaway mailbox', function () {
