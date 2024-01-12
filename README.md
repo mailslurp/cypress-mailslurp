@@ -126,7 +126,7 @@ You can also configure Cypress using the config format.
 You can also pass the `cy.mailslurp()` function a config containing an `apiKey` like so:
 
 ```typescript
-cy.mailslurp({apiKey: 'YOUR_KEY'})
+cy.mailslurp({ apiKey: 'YOUR_KEY' })
 ```
 
 ### Timeouts
@@ -180,7 +180,7 @@ You can test that you have setup MailSlurp correctly in a test like so:
 describe('sign up using disposable email', function () {
     it('can set config', () => {
         //<gen>cy_config_dynamic
-        cy.mailslurp({apiKey: 'YOUR_KEY'})
+        cy.mailslurp({ apiKey: 'YOUR_KEY' })
         
 ```
 

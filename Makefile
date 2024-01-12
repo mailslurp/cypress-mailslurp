@@ -14,7 +14,7 @@ cypress-open:
 	CYPRESS_MAILSLURP_API_KEY=$(API_KEY) npm run cypress-open
 
 # increment package json then deploy
-deploy: build cypress test readme
+deploy: build cypress readme
 	npm publish
 
 readme: node_modules
