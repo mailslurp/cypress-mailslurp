@@ -2,7 +2,7 @@
   "name": "cypress-mailslurp",
   "author": "mailslurp",
   "description": "Cypress email and SMS plugin for MailSlurp. Create test email accounts to send and receive emails in Cypress tests. Read SMS and TXT messages too and test against fake mailservers.",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -29,16 +29,16 @@
   },
   "module": "dist/cypress-mailslurp.esm.js",
   "devDependencies": {
-    "cypress": "^13.6.2",
-    "eslint-plugin-chai-friendly": "^0.6.0",
-    "eslint-plugin-cypress": "^2.15.1",
-    "fast-glob": "^3.3.2",
-    "jest-diff": "^29.5.0",
+    "cypress": "^14.5.4",
+    "eslint-plugin-chai-friendly": "^1.1.0",
+    "eslint-plugin-cypress": "^5.1.1",
+    "fast-glob": "^3.3.3",
+    "jest-diff": "^30.0.5",
     "tsdx": "^0.14.1",
-    "tslib": "^2.2.0",
-    "typescript": "^4.2.4"
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.2"
   },
   "dependencies": {
-    "mailslurp-client": "^15.17.4"
+    "mailslurp-client": "^16.0.0"
   }
 }
