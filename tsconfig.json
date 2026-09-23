@@ -2,11 +2,13 @@
   // see https://www.typescriptlang.org/tsconfig to better understand tsconfigs
   "include": ["src", "types", "src/index.d.ts"],
   "compilerOptions": {
-    "module": "esnext",
-    "lib": ["dom", "esnext"],
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["DOM", "ES2022"],
     "importHelpers": true,
     // output .d.ts declaration files for consumers
     "declaration": true,
+    "declarationMap": true,
     // output .js.map sourcemap files for consumers
     "sourceMap": true,
     // match output dir to input dir. e.g. dist/index instead of dist/src/index
@@ -19,17 +21,17 @@
     // noUnused* overlap with @typescript-eslint/no-unused-vars, can disable if duplicative
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    // use Node's module resolution algorithm, instead of the legacy TS one
-    "moduleResolution": "node",
-    // transpile JSX to React.createElement
-    "jsx": "react",
+    // use modern package exports when resolving modules
+    "moduleResolution": "bundler",
     // interop between ESM and CJS modules. Recommended by TS
     "esModuleInterop": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
     // significant perf increase by skipping checking .d.ts files, particularly those in node_modules. Recommended by TS
     "skipLibCheck": true,
     // error out if import and file system have a casing mismatch. Recommended by TS
     "forceConsistentCasingInFileNames": true,
-    // `tsdx build` ignores this option, but it is commonly used when type-checking separately with `tsc`
+    // Bunchee handles build output; direct TypeScript runs only type-check
     "noEmit": true,
     "types": ["cypress"]
   }

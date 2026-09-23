@@ -1,5 +1,6 @@
 /// <reference types="./" />
-import { Config, MailSlurp } from 'mailslurp-client';
+import { MailSlurp } from 'mailslurp-client';
+import type * as MailSlurpClient from 'mailslurp-client';
 
 const missingApiKeyError =
   'Error no MailSlurp API Key. Please either pass the mailslurp command a valid Config object or set the `CYPRESS_MAILSLURP_API_KEY` ' +
@@ -9,7 +10,7 @@ const missingApiKeyError =
 function register(Cypress: Cypress.Cypress) {
   Cypress.Commands.add(
     'mailslurp' as any,
-    ((config?: Config) => {
+    ((config?: MailSlurpClient.Config) => {
       const createClient = (apiKey: string) =>
         new MailSlurp({
           ...config,

@@ -12,9 +12,6 @@ export default defineConfig({
     MAILSLURP_API_KEY: process.env.API_KEY,
   },
   e2e: {
-    setupNodeEvents(on, config) {
-      return require('./cypress/plugins/index.js')(on, config)
-    },
     // examples run against the playground app
     baseUrl: 'https://playground.mailslurp.com',
     // these examples require no test isolation

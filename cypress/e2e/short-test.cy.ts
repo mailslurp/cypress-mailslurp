@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-/// <reference types="../../src" />
+/// <reference types="../../dist" />
 describe('can set config', function () {
     it('can set config', () => {
         //<gen>cy_config_dynamic

@@ -391,7 +391,7 @@ describe('user sign up test with mailslurp plugin', function() {
         mailslurp.waitForLatestEmail(this.inboxId, 30000, true)
       )
       // extract the confirmation code from the email body
-      .then(email => /.*verification code is (\d{6}).*/.exec(email.body!!)!![1])
+      .then(email => /.*verification code is (\d{6}).*/.exec(email.body!)![1])
       // fill out the confirmation form and submit
       .then(code => {
         cy.get('[name=code]')

@@ -4,5 +4,5 @@
     "rootDir": "..",
     "types": ["cypress", "node"]
   },
-  "include": ["**/*.ts", "../src/index.d.ts"]
+  "include": ["**/*.ts"]
 }

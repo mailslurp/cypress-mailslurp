@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-/// <reference types="../../src" />
+/// <reference types="../../dist" />
 //<gen>cy_plugin_test_usage
 describe('basic usage', function () {
   it('can load the plugin', function () {
@@ -72,7 +72,7 @@ describe('user sign up test with mailslurp plugin', function() {
         mailslurp.waitForLatestEmail(this.inboxId, 30000, true)
       )
       // extract the confirmation code from the email body
-      .then(email => /.*verification code is (\d{6}).*/.exec(email.body!!)!![1])
+      .then(email => /.*verification code is (\d{6}).*/.exec(email.body!)![1])
       // fill out the confirmation form and submit
       .then(code => {
         cy.get('[name=code]')

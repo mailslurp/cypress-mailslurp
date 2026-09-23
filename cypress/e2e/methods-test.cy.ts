@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-/// <reference types="../../src" />
+/// <reference types="../../dist" />
 import {MailSlurp} from "mailslurp-client";
 
 describe('methods', function () {

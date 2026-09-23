@@ -11,13 +11,16 @@
  * Replaces `{{block_name}}` in README tpl with the content of the block
  * Writes over <rootDir>/README.md
  */
-const fs =require( 'fs');
-const { join } =require("path");
-const glob =require("fast-glob");
-const { diff } = require("jest-diff");
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import glob from 'fast-glob';
+import { diff } from 'jest-diff';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const log = console.log
-const commentStart='\/\/<gen>'
-const commentEnd='\/\/</gen>'
+const commentStart='//<gen>'
+const commentEnd='//</gen>'
 
 function minIndent(inp) {
 	const match = inp.match(/^[ \t]*(?=\S)/gm);
@@ -58,14 +61,14 @@ async function checkFile(content) {
 async function getGenBlocks(content){
     const pKeys = new RegExp(`${commentStart}([0-9a-zA-Z_]*)`, 'g')
     const matchKeys =  [...content.matchAll(pKeys)]
-    return [].concat(...matchKeys.map(([_, key]) => {
+    return [].concat(...matchKeys.map(([, key]) => {
         const pBlock =  new RegExp(`${commentStart}${key}[\\r\\n]*([\\s\\S]+)${commentEnd}`, 'g')
         log(`Key ${key} match ${pBlock}`)
         const blocks = [...content.matchAll(pBlock)]
         log(`Found ${blocks.length} block for ${key}`)
         return blocks.map(it => {
             log(`Inside ${key} block with ${it.length} params` )
-            const [_,body] = it
+            const [,body] = it
             return { id: key, body: stripIndent(body.split(commentEnd)[0])}
         })
     }))
@@ -98,7 +101,7 @@ async function getGenBlocks(content){
     log("Now get template and join")
     let templateReadme = await getFileContent(join(__dirname, '../templates/README.tpl.md'))
     const variables = new RegExp('\\{\\{([a-zA-Z_]*)\\}\\}', 'g')
-    const names = Array.from(new Set(Array.from(templateReadme.matchAll(variables)).map(([_,name]) => name).sort()).keys()).map(it => it.toString())
+    const names = Array.from(new Set(Array.from(templateReadme.matchAll(variables)).map(([,name]) => name).sort()).keys()).map(it => it.toString())
     log("Found variable names " + names)
 
     const definedNames = Object.keys(blockMap).sort()

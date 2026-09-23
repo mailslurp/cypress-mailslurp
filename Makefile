@@ -5,7 +5,6 @@ fmt:
 
 build:
 	npm run build
-	cp src/index.d.ts dist/index.d.ts
 
 cypress:
 	npm run cypress
