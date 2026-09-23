@@ -8,10 +8,10 @@ build:
 	cp src/index.d.ts dist/index.d.ts
 
 cypress:
-	CYPRESS_MAILSLURP_API_KEY=$(API_KEY) npm run cypress
+	npm run cypress
 
 cypress-open:
-	CYPRESS_MAILSLURP_API_KEY=$(API_KEY) npm run cypress-open
+	npm run cypress-open
 
 # increment package json then deploy
 deploy: build cypress readme

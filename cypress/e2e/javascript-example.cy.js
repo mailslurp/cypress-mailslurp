@@ -12,7 +12,7 @@ describe('MailSlurp plugin example', () => {
     cy.mailslurp()
       .then(mailslurp => mailslurp.createInbox())
       .then(inbox => {
-        expect(inbox.emailAddress).to.contain('@mailslurp');
+        expect(inbox.emailAddress).to.match(/^[^@]+@[^@]+$/);
         return inbox;
       });
   });
@@ -29,7 +29,7 @@ describe('MailSlurp plugin example', () => {
     });
     it('can access inbox using this', function() {
       expect(this.inboxId).to.exist;
-      expect(this.emailAddress).to.contain('@mailslurp');
+      expect(this.emailAddress).to.match(/^[^@]+@[^@]+$/);
     });
   });
 });

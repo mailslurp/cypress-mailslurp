@@ -47,7 +47,7 @@ async function getFileContent(path){
 }
 
 async function checkFile(content) {
-    const startCount = (content.match(new RegExp(commentEnd, 'gm')) || []).length
+    const startCount = (content.match(new RegExp(commentStart, 'gm')) || []).length
     const endCount = (content.match(new RegExp(commentEnd, 'gm')) || []).length
     if(startCount !== endCount) {
         throw Error(`Expected matching start and end comments ${startCount} ${endCount}`)

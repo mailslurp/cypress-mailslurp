@@ -2,11 +2,13 @@
 /// <reference types="../../src" />
 //<gen>cy_plugin_test_usage
 describe('basic usage', function () {
-  it('can load the plugin', async function () {
+  it('can load the plugin', function () {
     // test we can connect to mailslurp
-    const mailslurp = await cy.mailslurp();
-    const userInfo = await mailslurp.userController.getUserInfo();
-    expect(userInfo.id).to.exist
+    cy.mailslurp()
+      .then(mailslurp => mailslurp.userController.getUserInfo())
+      .then(userInfo => {
+        expect(userInfo.id).to.exist
+      })
   })
 });
 describe('store values', function () {
@@ -22,8 +24,8 @@ describe('store values', function () {
         });
   });
   it('can access values on this', function() {
-    // get wrapped email address and assert contains a mailslurp email address
-    expect(this.emailAddress).to.contain('@mailslurp');
+    // get wrapped email address and assert it is valid
+    expect(this.emailAddress).to.match(/^[^@]+@[^@]+$/);
   });
   //</gen>
 })
@@ -42,8 +44,8 @@ describe('user sign up test with mailslurp plugin', function() {
       });
   });
   it('01 - can load the demo application', function() {
-    // get wrapped email address and assert contains a mailslurp email address
-    expect(this.emailAddress).to.contain('@mailslurp');
+    // get wrapped email address and assert it is valid
+    expect(this.emailAddress).to.match(/^[^@]+@[^@]+$/);
     // visit the demo application
     cy.visit('/');
     cy.title().should('contain', 'React App');

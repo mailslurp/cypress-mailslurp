@@ -27,69 +27,90 @@ With MailSlurp and Cypress you can:
 - [Test email verification](https://www.mailslurp.com/examples/cypress-js/)
 
 ## Install
-Ensure you have Cypress installed first then run:
+Version 2 of this plugin requires Cypress 15.10 or newer and supports Cypress 16. Ensure you have Cypress installed first, then run:
 
 ```sh
 npm install --save-dev cypress-mailslurp
 ```
 
-Then include the plugin in your `cypress/support/index.{js,ts}` file.
+Then include the plugin in your `cypress/support/e2e.{js,ts}` file.
 
 ```typescript
 import 'cypress-mailslurp';
 ```
 
 > [!IMPORTANT]  
-> You must import/require `cypress-mailslurp` in your support file `cypress/support/e2e.ts` or `cypress/support/index.{js,ts}`
+> You must import/require `cypress-mailslurp` in your support file, such as `cypress/support/e2e.ts`.
 
 ### Configuration
 See the [example project](https://github.com/mailslurp/examples/tree/master/javascript-cypress-mailslurp-plugin) for example code.
 
 ### API Key
 MailSlurp is free but requires an API Key. Get yours by [creating a free account](https://www.mailslurp.com/sign-up/).
-Set the environment variable `CYPRESS_MAILSLURP_API_KEY` or use the `cypress.json` file `env` property:
+
+API keys are secrets. The plugin reads `MAILSLURP_API_KEY` with Cypress's secure, asynchronous `cy.env()` command. It does not use the removed `Cypress.env()` API and does not expose your key to the application under test.
 
 #### Environment variable
-For Mac/Linux set the `CYPRESS_MAILSLURP_API_KEY` environment variable:
+The simplest option for local runs and CI is an operating-system environment variable. Cypress removes the `CYPRESS_` prefix before making the key available to `cy.env()`.
+
+For macOS/Linux:
 
 ```bash
-CYPRESS_MAILSLURP_API_KEY=your-api-key cypress run
+CYPRESS_MAILSLURP_API_KEY=your-api-key npx cypress run
 ```
 
-For Windows machines use the Powershell format `$env:CYPRESS_MAILSLURP_API_KEY`
+For Windows PowerShell:
 
-```
+```powershell
 $env:CYPRESS_MAILSLURP_API_KEY=your-api-key;
-cypress run;
+npx cypress run;
 ```
 
-#### Cypress env property
-You can also configure Cypress using the config format.
+#### Load the API key from `.env`
 
-```json
-{
-  "env": {
-    "MAILSLURP_API_KEY": "your-mailslurp-api-key"
+Cypress does not load generic `.env` files itself. Install `dotenv`, ignore `.env` in git, and map one value into the Cypress `env` configuration from the Node.js config process:
+
+```bash
+npm install --save-dev dotenv
+```
+
+```dotenv
+# .env
+MAILSLURP_API_KEY=your-api-key
+```
+
+```typescript
+// cypress.config.ts
+import { defineConfig } from 'cypress'
+import 'dotenv/config'
+
+export default defineConfig({
+  env: {
+    MAILSLURP_API_KEY: process.env.MAILSLURP_API_KEY,
   }
-}
+})
 ```
+
+Do not commit `.env` or hard-code the key in `cypress.config.ts`. Cypress also supports `cypress.env.json`, `--env`, and values returned from `setupNodeEvents`; see the [Cypress environment variables and secrets guide](https://docs.cypress.io/app/guides/environment-variables).
 
 #### Configure dynamically
-You can also pass the `cy.mailslurp()` function a config containing an `apiKey` like so:
+You can also pass `cy.mailslurp()` a config containing an `apiKey`. Prefer environment configuration for real secrets so they do not become part of your test bundle.
 
 ```typescript
 {{cy_config_dynamic}}
 ```
 
 ### Timeouts
-MailSlurp requires timeouts to wait for inbound emails. You can set global timeouts in `cypress.json`:
+MailSlurp requires timeouts to wait for inbound emails. You can set global timeouts in `cypress.config.ts`:
 
-```json
-{
-  "defaultCommandTimeout": 30000,
-  "responseTimeout": 30000,
-  "requestTimeout": 30000
-}
+```typescript
+import { defineConfig } from 'cypress'
+
+export default defineConfig({
+  defaultCommandTimeout: 30_000,
+  responseTimeout: 30_000,
+  requestTimeout: 30_000,
+})
 ```
 
 Or you can set timeouts on a per-method basis using the first argument as a timeout config: 
@@ -113,7 +134,7 @@ import { MailSlurp } from "mailslurp-client";
 declare global {
     namespace Cypress {
         interface Chainable {
-            mailslurp: () => Promise<MailSlurp>;
+            mailslurp(): Chainable<MailSlurp>;
         }
     }
 }
@@ -192,3 +213,15 @@ We wait for the email to arrive using the `waitForLatestEmail` method and then e
 
 ### More examples
 See the [Cypress example test suite](https://github.com/mailslurp/cypress-mailslurp/tree/master/cypress) for real tests that use this plugin.
+
+## Development
+
+Cypress 16 requires Node.js 22.x, 24.x, or 26.x and newer. To run this repository's live end-to-end tests, copy `.env.example` to `.env`, replace the placeholder `API_KEY`, then run:
+
+```bash
+npm install
+npm run build
+npm run cypress
+```
+
+The repository's `cypress.config.ts` loads `API_KEY` from `.env` in its Node.js process and maps it to `MAILSLURP_API_KEY` for the plugin's `cy.env()` call. The `.env` file is ignored by git.

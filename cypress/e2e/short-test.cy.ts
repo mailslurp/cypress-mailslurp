@@ -10,6 +10,8 @@ describe('can set config', function () {
     it('can sign up using throwaway mailbox', function () {
         // create a mailslurp instance
         cy.mailslurp().then(function (mailslurp) {
+            cy.clearAllLocalStorage();
+            cy.clearAllCookies();
             // visit the demo application
             cy.visit('/');
             // create an email address and store it on this
@@ -66,6 +68,8 @@ describe('sign up using disposable email', function () {
     it('can sign up using throwaway mailbox', function () {
         // create a mailslurp instance
         cy.mailslurp().then(function (mailslurp) {
+            cy.clearAllLocalStorage();
+            cy.clearAllCookies();
             // visit the demo application
             cy.visit('/');
             // create an email address and store it on this
