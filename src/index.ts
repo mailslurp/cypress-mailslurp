@@ -2,20 +2,25 @@
 import { MailSlurp } from 'mailslurp-client';
 import type * as MailSlurpClient from 'mailslurp-client';
 
+export type MailSlurpConfig = Omit<MailSlurpClient.Config, 'apiKey'> & {
+  apiKey?: string;
+};
+
 const missingApiKeyError =
-  'Error no MailSlurp API Key. Please either pass the mailslurp command a valid Config object or set the `CYPRESS_MAILSLURP_API_KEY` ' +
+  'No MailSlurp API key was provided. Pass cy.mailslurp() a config object with an apiKey or set the `CYPRESS_MAILSLURP_API_KEY` ' +
   'environment variable to the value of your MailSlurp API Key to use the MailSlurp Cypress plugin. ' +
   'Create a free account at https://app.mailslurp.com/sign-up/. See https://docs.cypress.io/app/guides/environment-variables for more information.';
 
 function register(Cypress: Cypress.Cypress) {
   Cypress.Commands.add(
     'mailslurp' as any,
-    ((config?: MailSlurpClient.Config) => {
+    ((config?: MailSlurpConfig) => {
       const createClient = (apiKey: string) =>
         new MailSlurp({
           ...config,
           apiKey,
-          basePath: 'https://cypress.api.mailslurp.com',
+          basePath:
+            config?.basePath ?? 'https://cypress.api.mailslurp.com',
         });
 
       if (config?.apiKey) {

@@ -27,11 +27,14 @@
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
-    "lint": "oxlint --fix --deny-warnings src cypress scripts cypress.config.ts",
+    "lint": "oxlint --fix --deny-warnings src cypress scripts test cypress.config.ts",
     "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit && node ./node_modules/typescript/bin/tsc --project cypress/tsconfig.json --noEmit",
-    "cypress": "cypress run",
+    "test": "npm run build && npm run test:package && npm run typecheck && npm run lint && npm run readme:check",
+    "test:package": "node --test test/*.test.mjs",
+    "cypress": "cypress run --browser chrome",
     "cypress-open": "cypress open",
-    "readme": "node scripts/readme.js"
+    "readme": "node scripts/readme.js",
+    "readme:check": "node scripts/readme.js --check"
   },
   "devDependencies": {
     "@types/node": "^26.6.2",

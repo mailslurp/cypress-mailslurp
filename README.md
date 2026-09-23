@@ -89,11 +89,13 @@ npm install --save-dev cypress-mailslurp
 Then include the plugin in your `cypress/support/e2e.{js,ts}` file.
 
 ```typescript
-import 'cypress-mailslurp';
+import 'cypress-mailslurp'
 ```
 
+For a CommonJS support file, use `require('cypress-mailslurp')` instead. The package tests both entry points.
+
 > [!IMPORTANT]  
-> You must import/require `cypress-mailslurp` in your support file, such as `cypress/support/e2e.ts`.
+> Load `cypress-mailslurp` from your support file, such as `cypress/support/e2e.ts`, so the command is registered before specs run.
 
 ### Configuration
 See the [example project](https://github.com/mailslurp/examples/tree/master/javascript-cypress-mailslurp-plugin) for example code.
@@ -147,10 +149,12 @@ export default defineConfig({
 Do not commit `.env` or hard-code the key in `cypress.config.ts`. Cypress also supports `cypress.env.json`, `--env`, and values returned from `setupNodeEvents`; see the [Cypress environment variables and secrets guide](https://docs.cypress.io/app/guides/environment-variables).
 
 #### Configure dynamically
-You can also pass `cy.mailslurp()` a config containing an `apiKey`. Prefer environment configuration for real secrets so they do not become part of your test bundle.
+You can also pass `cy.mailslurp()` a config containing an `apiKey`. Prefer environment configuration for real secrets so they do not become part of your test bundle. Other MailSlurp client options, such as `basePath` and `headers`, can be combined with an API key loaded from the environment.
 
 ```typescript
-cy.mailslurp({ apiKey: 'YOUR_KEY' })
+cy.mailslurp({ apiKey: 'YOUR_KEY' }).then(mailslurp => {
+    expect(mailslurp.inboxController).to.exist
+})
 ```
 
 ### Timeouts
@@ -172,8 +176,8 @@ Or you can set timeouts on a per-method basis using the first argument as a time
 cy.then({ timeout: 60_000 }, () => { /* use mailslurp */ })
 ```
 
-#### Typescript support
-MailSlurp adds the `mailslurp` command to the Cypress `cy` object. Include the type definition reference comment in your test file or support index.ts:
+#### TypeScript support
+MailSlurp adds the `mailslurp` command to the Cypress `cy` object. Importing the package from the support file normally loads its type augmentation automatically. If your Cypress TypeScript configuration uses an explicit `types` list, include this reference in your spec or support file:
 
 ```typescript
 /// <reference types="cypress-mailslurp" />
@@ -182,82 +186,37 @@ MailSlurp adds the `mailslurp` command to the Cypress `cy` object. Include the t
 Or define the type yourself like so:
 
 ```typescript
-import { MailSlurp } from "mailslurp-client";
+import type { MailSlurpConfig } from 'cypress-mailslurp'
+import type { MailSlurp } from 'mailslurp-client'
 
 declare global {
-    namespace Cypress {
-        interface Chainable {
-            mailslurp(): Chainable<MailSlurp>;
-        }
+  namespace Cypress {
+    interface Chainable {
+      mailslurp(config?: MailSlurpConfig): Chainable<MailSlurp>
     }
+  }
 }
 ```
 
 ## Usage
-The Cypress MailSlurp plugin provide one simple command attached to the Cypress object: `cy.mailslurp()`. This method returns a MailSlurp client instance that has all the same methods and properties as the [official MailSlurp client](https://www.npmjs.com/package/mailslurp-client). Use the command with the `then()` method to access the instance:
+The Cypress MailSlurp plugin provides one simple command attached to the Cypress object: `cy.mailslurp()`. This method returns a MailSlurp client instance that has all the same methods and properties as the [official MailSlurp client](https://www.npmjs.com/package/mailslurp-client). Use the command with the `then()` method to access the instance:
 
 ```typescript
 cy.mailslurp().then(mailslurp => mailslurp.createInbox() /* etc */)
 ```
 
-You can test that you have setup MailSlurp correctly in a test like so:
+You can test that you have set up MailSlurp correctly like this:
 
 ```typescript
-describe('sign up using disposable email', function () {
-    it('can sign up using throwaway mailbox', function () {
-        // create a mailslurp instance
-        cy.mailslurp().then(function (mailslurp) {
-            cy.clearAllLocalStorage();
-            cy.clearAllCookies();
-            // visit the demo application
-            cy.visit('/');
-            // create an email address and store it on this
-            cy.then(() => mailslurp.createInbox())
-                .then((inbox) => {
-                    // save inbox id and email address to this
-                    cy.wrap(inbox.id).as('inboxId');
-                    cy.wrap(inbox.emailAddress).as('emailAddress');
-                })
-            // fill user details on app
-            cy.get('[data-test=sign-in-create-account-link]').click()
-            cy.then(function () {
-                // access stored email on this, make sure you use Function and not () => {} syntax for correct scope
-                cy.get('[name=email]').type(this.emailAddress)
-                cy.get('[name=password]').type('test-password')
-                return cy.get('[data-test=sign-up-create-account-button]').click();
-            })
-            // now wait for confirmation mail
-            cy.then({
-                // add timeout to the step to allow email to arrive
-                timeout: 120_000
-            }, function () {
-                return mailslurp
-                    // wait for the email to arrive in the inbox
-                    .waitForLatestEmail(this.inboxId, 120_000, true)
-                    // extract the code with a pattern
-                    .then(email => mailslurp.emailController.getEmailContentMatch({
-                        emailId: email.id,
-                        contentMatchOptions: {
-                            // regex pattern to extract verification code
-                            pattern: 'Your Demo verification code is ([0-9]{6})'
-                        }
-                    }))
-                    // save the verification code to this
-                    .then(({matches}) => cy.wrap(matches[1]).as('verificationCode'))
-            });
-            // confirm the user with the verification code
-            cy.then(function () {
-                cy.get('[name=code]').type(this.verificationCode)
-                cy.get('[data-test=confirm-sign-up-confirm-button]').click()
-                // use the email address and a test password
-                cy.get('[data-test=username-input]').type(this.emailAddress)
-                cy.get('[data-test=sign-in-password-input]').type('test-password')
-                // click the submit button
-                return cy.get('[data-test=sign-in-sign-in-button]').click();
-            })
-            cy.get('h1').should('contain', 'Welcome');
-        });
-    });
+describe('basic usage', function () {
+  it('can load the plugin', function () {
+    // test we can connect to mailslurp
+    cy.mailslurp()
+      .then(mailslurp => mailslurp.userController.getUserInfo())
+      .then(userInfo => {
+        expect(userInfo.id).to.exist
+      })
+  })
 });
 ```
 
@@ -320,11 +279,11 @@ cy.mailslurp().then(mailslurp => mailslurp.attachmentController.uploadAttachment
 }))
 ```
 
-### Storing values between tests
-Cypress has a unique async nature. To use MailSlurp effectively with Cypress chain your commands using [`then()`](https://docs.cypress.io/api/commands/then) or store results in wrapped aliases using [`wrap()`](https://docs.cypress.io/api/commands/wrap) and [`as()`](https://docs.cypress.io/api/commands/as).
+### Sharing values with tests
+Cypress commands are asynchronous. Chain MailSlurp work with [`then()`](https://docs.cypress.io/api/commands/then), or store results in aliases using [`wrap()`](https://docs.cypress.io/api/commands/wrap) and [`as()`](https://docs.cypress.io/api/commands/as). Cypress resets aliases before every test, so create aliases in `beforeEach()` when multiple tests need them:
 
 ```typescript
-before(function() {
+beforeEach(function() {
   return cy
       .mailslurp()
       .then(mailslurp => mailslurp.createInbox())
@@ -341,82 +300,54 @@ it('can access values on this', function() {
 ```
 
 > [!NOTE]
-> Using `wrap` to store values across test methods requires you to use `function` syntax instead of `() =>` arrow syntax. This ensure that `this` is dynamically scoped and includes the aliased variables.
+> Accessing aliases with `this` requires `function` syntax instead of an arrow function. You can avoid `this` by retrieving an alias with `cy.get('@emailAddress')` in the same test.
 
 ## Example test
 Here is an example of testing user sign up on a demo application hosted at [playground.mailslurp.com](https://playground.mailslurp.com). 
-It creates a new MailSlurp inbox before all tests and saves the `inbox.id` and `inbox.emailAddress` to a shared text context using the `cy.wrap().as()` methods. 
-It then loads the demo application, fills out a sign up form using the email address and receives a user confirmation code. 
-We wait for the email to arrive using the `waitForLatestEmail` method and then extract a confirmation code that can be submitted to the app to confirm the user.
+The test creates a MailSlurp inbox and saves its `id` and `emailAddress` as aliases within the same test. It then fills out the sign-up form, waits for the verification email with `waitForLatestEmail`, extracts the confirmation code, and signs in.
 
 ```typescript
 describe('user sign up test with mailslurp plugin', function() {
-  // use cypress-mailslurp plugin to create an email address before test
-  before(function() {
-    return cy
-      .mailslurp()
-      .then(mailslurp => mailslurp.createInbox())
-      .then(inbox => {
-        // save inbox id and email address to this (make sure you use function and not arrow syntax)
-        cy.wrap(inbox.id).as('inboxId');
-        cy.wrap(inbox.emailAddress).as('emailAddress');
-      });
-  });
-  it('01 - can load the demo application', function() {
-    // get wrapped email address and assert it is valid
-    expect(this.emailAddress).to.match(/^[^@]+@[^@]+$/);
-    // visit the demo application
-    cy.visit('/');
-    cy.title().should('contain', 'React App');
-  });
-  // use function instead of arrow syntax to access aliased values on this
-  it('02 - can sign up using email address', function() {
-    // click sign up and fill out the form
-    cy.get('[data-test=sign-in-create-account-link]').click();
-    // use the email address and a test password
-    cy.get('[name=email]')
-      .type(this.emailAddress)
-      .trigger('change');
-    cy.get('[name=password]')
-      .type('test-password')
-      .trigger('change');
-    // click the submit button
-    cy.get('[data-test=sign-up-create-account-button]').click();
-  });
-  it('03 - can receive confirmation code by email', function() {
-    // app will send user an email containing a code, use mailslurp to wait for the latest email
-    cy.mailslurp()
-      // use inbox id and a timeout of 30 seconds
-      .then(mailslurp =>
-        mailslurp.waitForLatestEmail(this.inboxId, 30000, true)
-      )
-      // extract the confirmation code from the email body
-      .then(email => /.*verification code is (\d{6}).*/.exec(email.body!)![1])
-      // fill out the confirmation form and submit
-      .then(code => {
-        cy.get('[name=code]')
-          .type(code)
-          .trigger('change');
-        cy.get('[data-test=confirm-sign-up-confirm-button]').click();
-      });
-  });
-  // fill out sign in form
-  it('04 - can sign in with confirmed account', function() {
-    // use the email address and a test password
-    cy.get('[data-test=username-input]')
-      .type(this.emailAddress)
-      .trigger('change');
-    cy.get('[data-test=sign-in-password-input]')
-      .type('test-password')
-      .trigger('change');
-    // click the submit button
-    cy.get('[data-test=sign-in-sign-in-button]').click();
-  });
-  // can see authorized welcome screen
-  it('05 - can see welcome screen', function() {
-    // click sign up and fill out the form
-    cy.get('h1').should('contain', 'Welcome');
-  });
+  it('can verify a new user by email', function() {
+    cy.mailslurp().then(function(mailslurp) {
+      cy.then(() => mailslurp.createInbox()).then(inbox => {
+        cy.wrap(inbox.id).as('inboxId')
+        cy.wrap(inbox.emailAddress).as('emailAddress')
+      })
+
+      cy.visit('/')
+      cy.get('[data-test=sign-in-create-account-link]').click()
+      cy.then(function() {
+        cy.get('[name=email]').type(this.emailAddress)
+        cy.get('[name=password]').type('test-password')
+        cy.get('[data-test=sign-up-create-account-button]').click()
+      })
+
+      cy.then({ timeout: 60_000 }, function() {
+        return mailslurp.waitForLatestEmail(this.inboxId, 60_000, true)
+      })
+        .then(email => {
+          const code = /verification code is (\d{6})/.exec(
+            email.body ?? ''
+          )?.[1]
+          if (!code) {
+            throw new Error('Verification email did not contain a code')
+          }
+          return code
+        })
+        .then(code => {
+          cy.get('[name=code]').type(code)
+          cy.get('[data-test=confirm-sign-up-confirm-button]').click()
+        })
+
+      cy.then(function() {
+        cy.get('[data-test=username-input]').type(this.emailAddress)
+        cy.get('[data-test=sign-in-password-input]').type('test-password')
+        cy.get('[data-test=sign-in-sign-in-button]').click()
+      })
+      cy.get('h1').should('contain', 'Welcome')
+    })
+  })
 });
 ```
 
@@ -425,12 +356,14 @@ See the [Cypress example test suite](https://github.com/mailslurp/cypress-mailsl
 
 ## Development
 
-Cypress 16 requires Node.js 22.x, 24.x, or 26.x and newer. To run this repository's live end-to-end tests, copy `.env.example` to `.env`, replace the placeholder `API_KEY`, then run:
+Cypress 16 requires Node.js 22.x, 24.x, or 26.x and newer. The live end-to-end suite runs in Chrome because Cypress 16 deprecates Electron and uses its native browser network in Chrome. Copy `.env.example` to `.env`, replace the placeholder `API_KEY`, then run:
 
 ```bash
 npm install
-npm run build
+npm test
 npm run cypress
 ```
 
 The repository's `cypress.config.ts` loads `API_KEY` from `.env` in its Node.js process and maps it to `MAILSLURP_API_KEY` for the plugin's `cy.env()` call. The `.env` file is ignored by git.
+
+README examples are generated from the tested `<gen>` blocks in the Cypress specs. After changing one of those blocks or this template, run `npm run readme`; `npm test` verifies that `README.md` is current.

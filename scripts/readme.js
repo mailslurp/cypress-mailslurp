@@ -21,6 +21,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const log = console.log
 const commentStart='//<gen>'
 const commentEnd='//</gen>'
+const checkOnly = process.argv.includes('--check')
 
 function minIndent(inp) {
 	const match = inp.match(/^[ \t]*(?=\S)/gm);
@@ -93,6 +94,9 @@ async function getGenBlocks(content){
         const blocks = await getGenBlocks(content)
         log(`${blocks.length} blocks found`)
         for (const block of blocks) {
+            if (Object.hasOwn(blockMap, block.id)) {
+                throw new Error(`Duplicate generated README block: ${block.id}`)
+            }
             log(`Writing block ${block.id}`)
             blockMap[block.id] = block.body
         }
@@ -120,8 +124,18 @@ async function getGenBlocks(content){
         throw new Error(`README contains an unprocessed end comment //</gen>`)
     }
 
-    log("Finished, write readme")
-    await fs.promises.writeFile(join(__dirname, "../README.md"), templateReadme, { encoding: 'utf-8'})
+    const readmePath = join(__dirname, "../README.md")
+    if (checkOnly) {
+        log("Check generated README matches README.md")
+        const currentReadme = await getFileContent(readmePath)
+        if (currentReadme !== templateReadme) {
+            throw new Error(`README.md is out of date. Run npm run readme.\n${diff(currentReadme, templateReadme)}`)
+        }
+        log("README.md is up to date")
+    } else {
+        log("Finished, write readme")
+        await fs.promises.writeFile(readmePath, templateReadme, { encoding: 'utf-8'})
+    }
 
 
 })().catch(err => {
