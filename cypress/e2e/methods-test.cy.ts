@@ -1,39 +1,32 @@
 /// <reference types="cypress" />
-import {MailSlurp} from "mailslurp-client";
 
-describe('methods', function () {
-  it('can call common methods', function () {
-      cy.log("Creating inbox")
-    //<gen>cy_plugin_create_inbox
+//<gen>cy_plugin_send_receive
+describe('send and receive email', function () {
+  it('can extract a code from a received email', function () {
     cy.mailslurp()
-        .then((mailslurp: MailSlurp) => mailslurp.createInboxWithOptions({}))
-        .then(inbox => {
-          expect(inbox.emailAddress).to.match(/^[^@]+@[^@]+$/)
-          // save the inbox values for access in other tests
-          cy.wrap(inbox.id).as('inboxId')
-          cy.wrap(inbox.emailAddress).as('emailAddress')
-        })
-    //</gen>
-      cy.log("Sending email")
-    //<gen>cy_plugin_send_email
+      .then(mailslurp => mailslurp.createInboxWithOptions({}))
+      .then(inbox => {
+        expect(inbox.emailAddress).to.match(/^[^@]+@[^@]+$/)
+        cy.wrap(inbox.id).as('inboxId')
+        cy.wrap(inbox.emailAddress).as('emailAddress')
+      })
+
+    cy.mailslurp().then(mailslurp => mailslurp.sendEmail(this.inboxId, {
+      to: [this.emailAddress],
+      subject: 'Email confirmation',
+      body: 'Your code is: ABC-123',
+    }))
+
+    // Give Cypress slightly longer than the MailSlurp API wait.
     cy.mailslurp()
-        .then((mailslurp: MailSlurp) => mailslurp.sendEmail(this.inboxId, {
-          to: [this.emailAddress],
-          subject: 'Email confirmation',
-          body: 'Your code is: ABC-123',
-        }))
-    //</gen>
-    //<gen>cy_plugin_wait
-      cy.log("Waiting for email")
-      cy.mailslurp().then({
-          // set a long timeout when waiting for an email to arrive
-          timeout: 60_000,
-      }, (mailslurp: MailSlurp) => mailslurp.waitForLatestEmail(this.inboxId, 60_000, true))
-          .then(email => {
-              expect(email.subject).to.contain('Email confirmation')
-              const code = /Your code is: (\w+-\d+)/.exec(email.body ?? '')?.[1]
-              expect(code).to.equal('ABC-123')
-          })
-      //</gen>
+      .then({ timeout: 65_000 }, mailslurp =>
+        mailslurp.waitForLatestEmail(this.inboxId, 60_000, true)
+      )
+      .then(email => {
+        expect(email.subject).to.contain('Email confirmation')
+        const code = /Your code is: (\w+-\d+)/.exec(email.body ?? '')?.[1]
+        expect(code).to.equal('ABC-123')
+      })
   })
-});
+})
+//</gen>

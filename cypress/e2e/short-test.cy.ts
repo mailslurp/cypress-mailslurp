@@ -7,7 +7,6 @@ describe('can set config', function () {
         })
         //</gen>
     })
-    //<gen>cy_example_short
     it('can sign up using throwaway mailbox', function () {
         // create a mailslurp instance
         cy.mailslurp().then(function (mailslurp) {
@@ -62,5 +61,4 @@ describe('can set config', function () {
             cy.get('h1').should('contain', 'Welcome');
         });
     });
-    //</gen>
 })

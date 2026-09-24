@@ -21,9 +21,6 @@
     "dist",
     "src"
   ],
-  "engines": {
-    "node": "^20.1.0 || ^22.0.0 || >=24.0.0"
-  },
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
@@ -50,7 +47,7 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
-    "mailslurp-client": "^17.4.0"
+    "mailslurp-client": "^17.6.0"
   },
   "peerDependencies": {
     "cypress": ">=15.10.0"
